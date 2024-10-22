@@ -224,13 +224,16 @@ public class IniPCCManager {
 		
 
 //		EXCLUDE
-		LSPA lspa = new LSPA();
+		/**
+		 * LSPA lspa = new LSPA();
 		lspa.setSetupPrio(7);
 		lspa.setHoldingPrio(7);
 		lspa.setIncludeAny(4);
 //		lspa.setExcludeAny(Integer.parseInt(exclude));
 		inilsp.setLspa(lspa);
 	
+		 */
+		
 //		AssociationIPv4 aso = new AssociationIPv4();
 //		aso.setAssocID(0);
 //		aso.setAssocType(1);
@@ -514,7 +517,7 @@ public class IniPCCManager {
 		ext.setEndpoint(null);
 		aso.setExtended_ssociation_id_tlv(ext);
 		
-		aso.setPathProtectionAssoTLV(path);
+		//aso.setPathProtectionAssoTLV(path);
 		
 		String str = "10.95.45.107";
 		Inet4Address ip_pcc = null;
