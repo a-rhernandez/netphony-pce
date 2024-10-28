@@ -823,6 +823,7 @@ public class PCEManagementSession extends Thread {
 		String dst_ip= st.nextToken();
 		//String src_ip= "1.1.1.1";
 		try {
+			System.out.println(dst_ip);
 			ipp = (Inet4Address)Inet4Address.getByName(dst_ip);
 			((EndPointsIPv4) ep).setDestIP(ipp);								
 		} catch (UnknownHostException e) {

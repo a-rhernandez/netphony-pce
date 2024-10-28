@@ -31,7 +31,7 @@ public class PCEServerParameters {
 	/**
 	 * TCP port to connect to manage the PCE
 	 */
-	private int PCEManagementPort = 8888;
+	private int PCEManagementPort = 6666;
 
 	/**
 	 * Time betweeen updates to parent PCE. NOT USED NOW!!!!

@@ -3,8 +3,9 @@
 	<PCEServerPort>4189</PCEServerPort>
 	<PCEManagementPort>6666</PCEManagementPort>
 	<!--<LocalPCEAddress>192.168.1.200</LocalPCEAddress>-->
-	<LocalPCEAddress>10.95.40.175</LocalPCEAddress>
-
+ 	<LocalPCEAddress>192.168.1.92</LocalPCEAddress> 
+<!-- 	<LocalPCEAddress>10.95.24.169</LocalPCEAddress> -->
+	
 	<ConnectTimer>
 	<!-- Connect:  the timer (in seconds) started after having initialized a
       TCP connection using the PCEP-registered TCP port.  The value of
@@ -57,7 +58,7 @@
 	<!--<networkDescriptionFile>networks\Network_8_nodes.xml</networkDescriptionFile>-->
 	<!--<networkDescriptionFile>networks\network_NSFNet.xml</networkDescriptionFile>-->
 	<!--<networkDescriptionFile>/usr/local/nodeConfig/topologia.xml</networkDescriptionFile>-->
-	<networkDescriptionFile>C:\Users\b.lcm\eclipse-workspace\FORK\netphony-pce\topologia_ifusion.xml</networkDescriptionFile>
+	<networkDescriptionFile>C:\Users\idb0177\git\netphony-pce\topologia_IFUSION.xml</networkDescriptionFile>
 
 	<actingAsBGP4Peer>false</actingAsBGP4Peer>
 	<BGP4File>src/main/sample-config-files/BGP4Parameters_2.xml</BGP4File>

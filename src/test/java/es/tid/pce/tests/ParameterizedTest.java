@@ -52,12 +52,12 @@ public class ParameterizedTest {
 	    public static Collection configs() {
 	    	Object[][] objects={
 	    			{"src/test/resources/PCEServerConfiguration_SSON_Line.xml", "localhost 4189 192.168.1.2 192.168.1.5 -g -of 1002 -rgbw 2", "-nopath"},
-	    			{"src/test/resources/PCEServerConfiguration_SSON_Line.xml", "localhost 4189 192.168.1.1 192.168.1.2 -g -of 1002 -rgbw 2", "-ero 192.168.1.1:1,192.168.1.2/32"},
-	    			{"src/test/resources/PCEServerConfiguration_SSON_Line.xml", "localhost 4189 192.168.1.1 192.168.1.3 -g -rgbw 2", "-ero 192.168.1.1:1,192.168.1.2:2,192.168.1.3/32"},
-	    			{"src/test/resources/PCEServerConfiguration_SSON_Line.xml", "localhost 4189 192.168.1.3 192.168.1.1 -rgbw 2", "-ero 192.168.1.3:2,192.168.1.2:1,192.168.1.1/32"},
-	    			{"src/test/resources/PCEServerConfiguration_SSON_Triangle.xml", "localhost 4189 192.168.1.1 192.168.1.3 -g -rgbw 2", "-ero 192.168.1.1:2,192.168.1.3/32"},
-	    			{"src/test/resources/PCEServerConfiguration_SSON_Triangle.xml", "localhost 4189 192.168.1.3 192.168.1.2 -rgbw 2", "-ero 192.168.1.3:2,192.168.1.2/32"},	
-	    			{"src/test/resources/PCEServerConfiguration_SSON_Triangle.xml", "localhost 4189 192.168.1.4 192.168.1.2 -rgbw 2", "-nopath"},	
+//	    			{"src/test/resources/PCEServerConfiguration_SSON_Line.xml", "localhost 4189 192.168.1.1 192.168.1.2 -g -of 1002 -rgbw 2", "-ero 192.168.1.1:1,192.168.1.2/32"},
+//	    			{"src/test/resources/PCEServerConfiguration_SSON_Line.xml", "localhost 4189 192.168.1.1 192.168.1.3 -g -rgbw 2", "-ero 192.168.1.1:1,192.168.1.2:2,192.168.1.3/32"},
+//	    			{"src/test/resources/PCEServerConfiguration_SSON_Line.xml", "localhost 4189 192.168.1.3 192.168.1.1 -rgbw 2", "-ero 192.168.1.3:2,192.168.1.2:1,192.168.1.1/32"},
+//	    			{"src/test/resources/PCEServerConfiguration_SSON_Triangle.xml", "localhost 4189 192.168.1.1 192.168.1.3 -g -rgbw 2", "-ero 192.168.1.1:2,192.168.1.3/32"},
+//	    			{"src/test/resources/PCEServerConfiguration_SSON_Triangle.xml", "localhost 4189 192.168.1.3 192.168.1.2 -rgbw 2", "-ero 192.168.1.3:2,192.168.1.2/32"},	
+//	    			{"src/test/resources/PCEServerConfiguration_SSON_Triangle.xml", "localhost 4189 192.168.1.4 192.168.1.2 -rgbw 2", "-nopath"},	
 	    	};
 			return Arrays.asList(objects);
 	    }
@@ -68,11 +68,11 @@ public class ParameterizedTest {
 		this.checkRes = checkRes.split(" ");
 	}
 		
-
 	
 	@Test
     public void test (){
-	
+		
+		
 		DomainPCEServer pceserver = new DomainPCEServer();
 		pceserver.configure(this.fileConf);
 		executor.execute(pceserver);

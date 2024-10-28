@@ -176,15 +176,6 @@ public class DomainPCEServer implements Runnable{
 		SingleDomainInitiateDispatcher iniDispatcher=null;
 		
 		
-
-		
-
-		
-		 
-		
-
-
-
 		//Log if the PCE is SR capable or NOT
 		if (params.isSRCapable()) {
 			log.info("PCEServer: PCE is SR capable with MSD="+pcepSessionsInformation.getMSD());
