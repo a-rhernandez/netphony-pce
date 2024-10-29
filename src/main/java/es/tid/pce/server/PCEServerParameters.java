@@ -14,7 +14,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import es.tid.pce.computingEngine.AlgorithmRule;
 import es.tid.pce.computingEngine.MapAlgoRule;
 import es.tid.pce.server.lspdb.ReportDB_Handler;
-import es.tid.tedb.Layer;
+import es.tid.pce.server.Layer;
 
 /**
  * Configuration Parameters of the PCE.

@@ -39,10 +39,6 @@ import es.tid.pce.server.lspdb.ReportDB_Handler;
 import es.tid.pce.server.lspdb.SingleDomainLSPDB;
 import es.tid.pce.server.management.PCEManagementSever;
 import es.tid.pce.server.wson.ReservationManager;
-import es.tid.tedb.DomainTEDB;
-import es.tid.tedb.MultiLayerTEDB;
-import es.tid.tedb.SimpleTEDB;
-
 
 public class DomainPCEServer implements Runnable{
 
@@ -88,8 +84,7 @@ public class DomainPCEServer implements Runnable{
 
 	RequestDispatcher PCCRequestDispatcher;
 	
-	//The Traffic Engineering Database
-	DomainTEDB ted;
+	
 			
 	//Used to initiate paths from NBI or locally. To merge later with the previous one.
 	
@@ -183,14 +178,7 @@ public class DomainPCEServer implements Runnable{
 
 		
 
-		if (params.isMultilayer()){
-			ted=new MultiLayerTEDB();
-			log.info("Multilayer");
-		}else{
-			log.info("Single layer PCE");
-			ted=new SimpleTEDB();
-		}
-
+		
 		if (params.isStateful())
 		{
 			//FIXME: By now, U flag is ALWAYS TRUE.
@@ -207,55 +195,43 @@ public class DomainPCEServer implements Runnable{
 
 		/***/
 
-		TopologyManager topologyManager = new TopologyManager(params, ted, log);
-		topologyManager.initTopology();
+	
 
 		OPcounter = new OperationsCounter();
 
-		ChildPCESessionManager pcm=null;
+	
 
 		RequestDispatcher PCCRequestDispatcherChild = null;
-		if (params.getParentPCEAddress()!=null){
-			//ChildPCERequestDispatcherParentPCE childPCERequestDispatcherParentPCE = new ChildPCERequestDispatcherParentPCE();
-			//For the session between the Domain (Child) PCE and the parent PCE
-			log.info("Initializing Manager of the ChildPCE - Parent PCE Session");	
-			PCCRequestDispatcherChild=new  RequestDispatcher(1,ted,null,params.isAnalyzeRequestTime());
-			pcm=new ChildPCESessionManager(PCCRequestDispatcherChild, params,ted,ted.getReachabilityEntry().getDomainId(),pcepSessionsInformation,iniDispatcher);
-		}else {
-			log.info("There is no parent PCE");
-
-		}
+		
 
 		//The Request Dispatcher, needed to dispatch the requests coming from the PCCs
 		log.info("Initializing Request Dispatcher");
 		
 
-		ReservationManager reservationManager=null;
-		if (params.isReservation()){
-			log.info("Launching Reservation Manager");
-			reservationManager= new ReservationManager(ted);//FIXME: he hecho el casting
-		}
+		
+		
 		CollaborationPCESessionManager	collaborationPCESessionManager=null;
-		if ((params.getParentPCEAddress()!=null)){			
-			if (params.isCollaborativePCEs()){//STRONGEST: Collaborative PCEs						
-				collaborationPCESessionManager = new CollaborationPCESessionManager();			
-				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,pcm.getChildPCERequestManager(),params.isAnalyzeRequestTime(),collaborationPCESessionManager);
-			}
-			else
-				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,pcm.getChildPCERequestManager(),params.isAnalyzeRequestTime());
-		}else {
-			if (params.isMultilayer()== true){
-				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,null,params.isAnalyzeRequestTime(),params.isUseMaxReqTime(), reservationManager, OPcounter, params.isMultilayer());
-			}
-			else if (params.isCollaborativePCEs()){//STRONGEST: Collabotarive PCEs	
-				collaborationPCESessionManager = new CollaborationPCESessionManager();	
-				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,null,params.isAnalyzeRequestTime(),params.isUseMaxReqTime(), reservationManager,collaborationPCESessionManager);
-			}else
-				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,null,params.isAnalyzeRequestTime(),params.isUseMaxReqTime(), reservationManager);
-		}
+		
+//		if ((params.getParentPCEAddress()!=null)){			
+//			if (params.isCollaborativePCEs()){//STRONGEST: Collaborative PCEs						
+//				collaborationPCESessionManager = new CollaborationPCESessionManager();			
+//				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,pcm.getChildPCERequestManager(),params.isAnalyzeRequestTime(),collaborationPCESessionManager);
+//			}
+//			else
+//				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,pcm.getChildPCERequestManager(),params.isAnalyzeRequestTime());
+//		}else {
+//			if (params.isMultilayer()== true){
+//				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,null,params.isAnalyzeRequestTime(),params.isUseMaxReqTime(), reservationManager, OPcounter, params.isMultilayer());
+//			}
+//			else if (params.isCollaborativePCEs()){//STRONGEST: Collabotarive PCEs	
+//				collaborationPCESessionManager = new CollaborationPCESessionManager();	
+//				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,null,params.isAnalyzeRequestTime(),params.isUseMaxReqTime(), reservationManager,collaborationPCESessionManager);
+//			}else
+//				PCCRequestDispatcher=new  RequestDispatcher(params.getPCCRequestsProcessors(),ted,null,params.isAnalyzeRequestTime(),params.isUseMaxReqTime(), reservationManager);
+//		}
 
 		//Notification dispatcher
-		NotificationDispatcher nd=new NotificationDispatcher(reservationManager);
+		NotificationDispatcher nd=new NotificationDispatcher(); // Nueva version sin reservattion Manager
 
 
 		if(params.algorithmRuleList.size()==0){
@@ -264,58 +240,16 @@ public class DomainPCEServer implements Runnable{
 		}
 
 		// When there is a parent PCE, connect to the parent PCE
-		Timer timer=new Timer();
-		if (params.getParentPCEAddress()!=null){
-			log.info("Inizializing Session with Parent PCE");
-			timer.schedule(pcm, 0, 1000000);
-		}	
 		
 		//Start the management server
 		pms=new PCEManagementSever(this);	
 		pms.start(); 
 
-		//In case it there is parent PCE, send topology periodically to the parent PCE
-		SendTopologyTask stg=null;
-		//ITSendTopologyTask ITstg=null;
-		if (params.getParentPCEAddress()!=null){			
-			if(params.ITcapable==true){
-				//				ITstg=new ITSendTopologyTask((SimpleITTEDB)ted,pcm);
-				//
-				//				Timer timer2=new Timer();
-				//				if (params.getParentPCEAddress()!=null){
-				//					log.info("Changing topology");
-				//					timer2.schedule(ITstg, 0, 100000);
-				//				}
-			}else if (!(params.isActingAsBGP4Peer())){
-				stg=new SendTopologyTask((DomainTEDB)ted,pcm);
-
-				Timer timer2=new Timer();
-				if (params.getParentPCEAddress()!=null){
-					log.info("Changing topology");
-					timer2.schedule(stg, 0, 100000);
-				}
-			}
-		}
-
-		SendReachabilityTask srt= new SendReachabilityTask(ted,pcm);
-		Timer timer3=new Timer();
-		if (params.getParentPCEAddress()!=null){
-			timer3.schedule(srt, 0, params.getTimeSendReachabilityTime());
-		}
+		
+		
+		
 		//STRONGEST: Collaborative PCEs
-		if (params.isCollaborativePCEs()){				
-			if (!(params.isPrimary())){	//If Backup PCE 	
-				BackupSessionManagerTask backupSessionTask =null;	
-				backupSessionTask= new BackupSessionManagerTask(params,ted,collaborationPCESessionManager,nd,pcepSessionsInformation);
-				//backupSessionTask.manageBackupPCESession();
-				Timer timerBackupSession=new Timer();
-				log.info("Inizializing Session with Primary PCE");
-				timerBackupSession.schedule(backupSessionTask, 0, 100000);
-			}		
-		}
-		else
-			log.info("There are no collaborative PCEs");
-
+		
 		listening = true;
 		try {
 			log.info("Listening on port: "+params.getPCEServerPort());
@@ -329,81 +263,13 @@ public class DomainPCEServer implements Runnable{
 			System.exit(-1);
 		}
 
-		try {
-			//FIXME: lo he cambiado aqu�
-			//Registration of Algorithms
-			for (int i=0;i<params.algorithmRuleList.size();++i){
-				try {
-					Class<?> aClass = Class.forName("es.tid.pce.computingEngine.algorithms."+params.algorithmRuleList.get(i).algoName+"Manager");
-					log.info("Registering algorithm "+ params.algorithmRuleList.get(i).algoName+" for of = "+params.algorithmRuleList.get(i).ar.of+" and svec = "+params.algorithmRuleList.get(i).ar.svec);            
-					if (params.algorithmRuleList.get(i).isParentPCEAlgorithm==false){
-						if(params.algorithmRuleList.get(i).isSSSONAlgorithm==false){
-							ComputingAlgorithmManager cam= ( ComputingAlgorithmManager)aClass.newInstance();
-							PCCRequestDispatcher.registerAlgorithm(params.algorithmRuleList.get(i).ar, cam);
-							if ((params.getParentPCEAddress()!=null)){	
-								PCCRequestDispatcherChild.registerAlgorithm(params.algorithmRuleList.get(i).ar, cam);
-							}
-							try{
-
-								Class<?> aClass2 = Class.forName("es.tid.pce.computingEngine.algorithms."+params.algorithmRuleList.get(i).algoName+"PreComputation");
-								ComputingAlgorithmPreComputation cam2= ( ComputingAlgorithmPreComputation)aClass2.newInstance();
-								cam2.setTEDB(ted);
-								cam2.initialize();
-								cam.setPreComputation(cam2);
-								((DomainTEDB) ted).register(cam2);
-								cam.setReservationManager(reservationManager);
-							}
-							catch (Exception e2){
-								e2.printStackTrace();
-								log.warn("No precomputation in "+"es.tid.pce.computingEngine.algorithms."+params.algorithmRuleList.get(i).algoName+"PreComputation");						
-							}
-						}
-						else{
-							ComputingAlgorithmManagerSSON cam_sson= (ComputingAlgorithmManagerSSON)aClass.newInstance();
-							PCCRequestDispatcher.registerAlgorithmSSON(params.algorithmRuleList.get(i).ar, cam_sson);
-							if ((params.getParentPCEAddress()!=null)){	
-								PCCRequestDispatcherChild.registerAlgorithmSSON(params.algorithmRuleList.get(i).ar, cam_sson);
-
-							}
-							try{
-								Class<?> aClass2 = Class.forName("es.tid.pce.computingEngine.algorithms."+params.algorithmRuleList.get(i).algoName+"PreComputation");
-								ComputingAlgorithmPreComputationSSON cam3= ( ComputingAlgorithmPreComputationSSON)aClass2.newInstance();
-								cam3.setTEDB(ted);
-								cam3.initialize();
-								cam_sson.setPreComputation(cam3);
-								((DomainTEDB) ted).registerSSON(cam3);
-								cam_sson.setReservationManager(reservationManager);
-							}
-							catch (Exception e2){
-								e2.printStackTrace();
-								log.warn("No precomputation in "+"es.tid.pce.computingEngine.algorithms."+params.algorithmRuleList.get(i).algoName+"PreComputation");						
-							}
-						}
-					}
-
-					//No registro los algoritmos que sean de parentPCE
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if ((params.getLambdaEnd()!=Integer.MAX_VALUE)&&(params.ITcapable==false)&&((params.isMultilayer())==false))
-				((SimpleTEDB)ted).notifyAlgorithms( params.getLambdaIni(),params.getLambdaEnd());
-
-
 
 
 			// This parameter tells the dispatcher that sync will be avoided.
 			// In better future times sync should be implemented
+		try{
 
-
-			//
+			
 			if (pcepSessionsInformation.isStateful())
 			{
 				log.info("redis: "+params.getDbType() + " "+params.getDbName());
@@ -426,13 +292,14 @@ public class DomainPCEServer implements Runnable{
 
 			//while (listening) {
 			while (listening) {
-				//new PCESession(serverSocket.accept(),params, PCCRequestsQueue,ted,pcm.getChildPCERequestManager()).start();
+				new DomainPCESession(serverSocket.accept(),params,PCCRequestDispatcher,nd,pcepSessionsInformation,PCCReportDispatcher,iniDispatcher).start();
 				//null,ted,pcm.getChildPCERequestManager()).start(
-				if (params.isCollaborativePCEs())
-					new DomainPCESession(serverSocket.accept(),params,PCCRequestDispatcher,ted,nd,reservationManager,collaborationPCESessionManager,pcepSessionsInformation,PCCReportDispatcher).start();
-				else {
-					new DomainPCESession(serverSocket.accept(),params,PCCRequestDispatcher,ted,nd,reservationManager,pcepSessionsInformation,PCCReportDispatcher,iniDispatcher).start();
-				}
+//				if (params.isCollaborativePCEs())
+//					//SIN TED NI RESERVATION MANAGER
+//					new DomainPCESession(serverSocket.accept(),params,PCCRequestDispatcher,nd,collaborationPCESessionManager,pcepSessionsInformation,PCCReportDispatcher).start();
+//				else {
+					//new DomainPCESession(serverSocket.accept(),params,PCCRequestDispatcher,nd,pcepSessionsInformation,PCCReportDispatcher,iniDispatcher).start();
+				//}
 			}
 			serverSocket.close();
 
@@ -443,12 +310,13 @@ public class DomainPCEServer implements Runnable{
 				log.error("Problem with the socket, exiting");
 				e.printStackTrace();
 			}
-		} 
-		catch (Exception e) {
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
+		} 
 	}
+
+	
 
 
 
@@ -542,13 +410,7 @@ public class DomainPCEServer implements Runnable{
 		PCCRequestDispatcher = pCCRequestDispatcher;
 	}
 
-	public DomainTEDB getTed() {
-		return ted;
-	}
-
-	public void setTed(DomainTEDB ted) {
-		this.ted = ted;
-	}
+	
 
 	public IniPCCManager getIniManager() {
 		return iniManager;

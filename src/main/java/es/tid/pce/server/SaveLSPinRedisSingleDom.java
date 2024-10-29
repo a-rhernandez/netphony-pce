@@ -27,9 +27,7 @@ import es.tid.rsvp.objects.subobjects.GeneralizedLabelEROSubobject;
 import es.tid.rsvp.objects.subobjects.IPv4prefixEROSubobject;
 import es.tid.rsvp.objects.subobjects.LabelEROSubobject;
 import es.tid.rsvp.objects.subobjects.UnnumberIfIDEROSubobject;
-import es.tid.tedb.IntraDomainEdge;
-import es.tid.tedb.MultiDomainTEDB;
-import es.tid.tedb.SimpleTEDB;
+
 
 public class SaveLSPinRedisSingleDom implements Runnable {
 	

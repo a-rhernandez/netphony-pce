@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import es.tid.pce.pcep.constructs.Notify;
 import es.tid.pce.pcep.messages.PCEPNotification;
-import es.tid.pce.server.wson.ReservationManager;
+
 
 /**
  * Esta funcion sera usada por el PCE para incluir una nueva notificacion a ser enviada
@@ -19,12 +19,13 @@ public class NotificationDispatcher {
 
 	private Logger log;
 	
-	public NotificationDispatcher(ReservationManager reservationManager){
+	public NotificationDispatcher(){
 		this.notificationList=new LinkedBlockingQueue<Notify>();
-		this.npt=new NotificationProcessorThread(notificationList, reservationManager);
+		this.npt = new NotificationProcessorThread(notificationList);
 		
 		npt.start();
-		log=LoggerFactory.getLogger("PCEServer");
+		log = LoggerFactory.getLogger("PCEServer");
+
 	}
 	
 	public void dispatchNotification(PCEPNotification m_not){

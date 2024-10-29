@@ -15,7 +15,6 @@ import es.tid.pce.parentPCE.MDLSPDB.MultiDomainLSPDB;
 import es.tid.pce.pcep.constructs.PCEPIntiatedLSP;
 import es.tid.pce.pcep.messages.PCEPInitiate;
 import es.tid.pce.server.lspdb.SingleDomainLSPDB;
-import es.tid.tedb.ReachabilityManager;
 
 public class SingleDomainInitiateDispatcher {
 	 /**

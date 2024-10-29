@@ -37,7 +37,6 @@ import es.tid.pce.pcepsession.PCEPSessionsInformation;
 import es.tid.pce.server.communicationpce.CollaborationPCESessionManager;
 import es.tid.pce.server.management.PCEManagementSession;
 import es.tid.pce.server.wson.ReservationManager;
-import es.tid.tedb.TEDB;
 import es.tid.util.UtilsFunctions;
 import es.tid.pce.pcepsession.PCEPValues;
 import es.tid.pce.server.communicationpce.RollSessionType;
@@ -70,7 +69,7 @@ public class DomainPCESession extends GenericPCEPSession{
 
 	private NotificationDispatcher notificationDispatcher;
 
-	private ReservationManager rm;
+//	===	private ReservationManager rm;
 	
 	private long internalSessionID;
 	
@@ -86,8 +85,8 @@ public class DomainPCESession extends GenericPCEPSession{
 
 	
 	public DomainPCESession(Socket s, PCEServerParameters params, 
-			RequestDispatcher requestDispatcher, TEDB ted,NotificationDispatcher notificationDispatcher, 
-			ReservationManager rm, PCEPSessionsInformation pcepSessionInformation,
+			RequestDispatcher requestDispatcher, NotificationDispatcher notificationDispatcher, 
+			PCEPSessionsInformation pcepSessionInformation,
 			ReportDispatcher reportDispatcher, SingleDomainInitiateDispatcher iniDispatcher){
 		super(pcepSessionInformation);
 		this.setFSMstate(PCEPValues.PCEP_STATE_IDLE);
@@ -105,7 +104,6 @@ public class DomainPCESession extends GenericPCEPSession{
 		this.keepAliveLocal=params.getKeepAliveTimer();
 		this.deadTimerLocal=params.getDeadTimer();
 		this.notificationDispatcher=notificationDispatcher;
-		this.rm=rm;
 		this.internalSessionID=getNewInternalSessionID();
 		this.reportDispatcher = reportDispatcher;
 		this.iniDispatcher=iniDispatcher;
@@ -113,10 +111,11 @@ public class DomainPCESession extends GenericPCEPSession{
 	}
 
 
-	public DomainPCESession(Socket s, PCEServerParameters params, RequestDispatcher requestDispatcher, 
-			TEDB ted,NotificationDispatcher notificationDispatcher, ReservationManager rm, 
+	
+
+	public DomainPCESession(Socket s, PCEServerParameters params, RequestDispatcher requestDispatcher,NotificationDispatcher notificationDispatcher, ReservationManager rm, 
 			CollaborationPCESessionManager collaborationPCESessionManager, 
-			PCEPSessionsInformation pcepSessionInformation, ReportDispatcher reportDispatcher){
+			PCEPSessionsInformation pcepSessionInformation, ReportDispatcher reportDispatcher) {
 		super(pcepSessionInformation);
 		this.setFSMstate(PCEPValues.PCEP_STATE_IDLE);
 		log=LoggerFactory.getLogger("PCEServer");
@@ -134,11 +133,13 @@ public class DomainPCESession extends GenericPCEPSession{
 		this.keepAliveLocal=params.getKeepAliveTimer();
 		this.deadTimerLocal=params.getDeadTimer();
 		this.notificationDispatcher=notificationDispatcher;
-		this.rm=rm;
+// ===		this.rm=rm;
 		this.internalSessionID=getNewInternalSessionID();
 		this.collaborationPCESessionManager=collaborationPCESessionManager;
 		this.reportDispatcher = reportDispatcher;
+		
 	}
+
 
 	/**
 	 * Initiates a Session between the Domain PCE and the peer PCC
@@ -413,14 +414,21 @@ public class DomainPCESession extends GenericPCEPSession{
 	private void processOpen(OPEN open) {
 		params.getLspDB().proccessOpen(open, remotePCEId);
 	}
-
-	public void endSession(){
-		if (rm!=null){
-			log.error("Cancelling all pending reservations of session "+ internalSessionID);
-			rm.cancelAllReservations();	
-		}
-
+	
+	
+	public void endSession() {
+		
+		
 	}
+
+
+//	public void endSession(){
+//		if (rm!=null){
+//			log.error("Cancelling all pending reservations of session "+ internalSessionID);
+//			rm.cancelAllReservations();	
+//		}
+//
+//	}
 	
 	public synchronized long getNewInternalSessionID(){
 		lastInternalSessionID+=1;
@@ -501,6 +509,10 @@ public ReportDispatcher getReportDispatcher() {
 public void setReportDispatcher(ReportDispatcher reportDispatcher) {
 	this.reportDispatcher = reportDispatcher;
 }
+
+
+
+
 
 
 

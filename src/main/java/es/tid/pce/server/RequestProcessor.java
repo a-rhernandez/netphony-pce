@@ -26,25 +26,29 @@ import es.tid.pce.pcep.objects.tlvs.NoPathTLV;
 import es.tid.rsvp.objects.subobjects.IPv4prefixEROSubobject;
 import es.tid.rsvp.objects.subobjects.UnnumberIfIDEROSubobject;
 import es.tid.tedb.IntraDomainEdge;
-import es.tid.tedb.SimpleTEDB;
-import es.tid.tedb.TEDB;
+
 
 public class RequestProcessor implements Runnable {
 	
-	private PCEPRequest req;
-	private DataOutputStream out;
+	
+	/*
+	 * Procesa Solicitudes PCEP en un hilo
+	 */
+	
+	
+	private PCEPRequest req;	// La solicitud PCEP que debe procesar
+	private DataOutputStream out; // Flujo de salida para enviar la respuesta despues de procesar
 	private Logger log=LoggerFactory.getLogger("PCEServer");;
 	
-	private TEDB ted;
-	private SimpleDirectedWeightedGraph<Object,IntraDomainEdge> networkGraph;
+	private SimpleDirectedWeightedGraph<Object,IntraDomainEdge> networkGraph; //Representación del grafo para realizar el calculo de la ruta
 	
-	private ParentPCERequestManager childPCERequestManager;
+	private ParentPCERequestManager childPCERequestManager; // Administrador de consultas 
 	
 	
-	public RequestProcessor(PCEPRequest req, DataOutputStream out, TEDB ted,ParentPCERequestManager childPCERequestManager){
+	public RequestProcessor(PCEPRequest req, DataOutputStream out,ParentPCERequestManager childPCERequestManager){
 		this.req=req;
 		this.out=out;
-		this.ted=ted;
+//	===		this.ted=ted;
 		this.childPCERequestManager=childPCERequestManager;
 	}
 	@Override
@@ -59,16 +63,15 @@ public class RequestProcessor implements Runnable {
 		log.info("Obtaining Network Graph copy");
 		
 		EndPoints  EP = null;
-		
 		Inet4Address source_router_id_addr = null;
 		Inet4Address dest_router_id_addr = null;
 		
-		if (!ted.isITtedb()){
-			networkGraph= ((SimpleTEDB)ted).getDuplicatedNetworkGraph();
+//	=== 		if (!ted.isITtedb()){
+//	===			networkGraph= ((SimpleTEDB)ted).getDuplicatedNetworkGraph();
 			EP = this.req.getRequest(0).getEndPoints();
 			source_router_id_addr= ((EndPointsIPv4)EP).getSourceIP();
 			dest_router_id_addr=((EndPointsIPv4)EP).getDestIP();
-		}
+//	===		}
 //		else{
 //			networkGraph= ((SimpleITTEDB)ted).getDuplicatedNetworkGraph();
 //			EP = this.req.getRequest(0).getEndPoints();
@@ -107,9 +110,8 @@ public class RequestProcessor implements Runnable {
 		
 	
 		
-		
 		log.info("Check if we have source and destination in our TED");
-		if (!((networkGraph.containsVertex(source_router_id_addr))&&(networkGraph.containsVertex(dest_router_id_addr)))){
+//	===		if (!((networkGraph.containsVertex(source_router_id_addr))&&(networkGraph.containsVertex(dest_router_id_addr)))){
 			if (childPCERequestManager!=null){
 				log.info("Source or destination are NOT in the TED, asking the parent PCE");
 				//PCEPRequest msg_req=new PCEPRequest();
@@ -219,6 +221,14 @@ public class RequestProcessor implements Runnable {
 		}
 		else{
 			log.info("Computing path");
+			
+			
+			/*
+			 * 
+			 * 
+			 * LLAMAR A TERAFLOW
+			 */
+			
 			
 			DijkstraShortestPath<Object,IntraDomainEdge>  dsp=new DijkstraShortestPath<Object,IntraDomainEdge> (networkGraph, source_router_id_addr, dest_router_id_addr);
 			GraphPath<Object,IntraDomainEdge> gp=dsp.getPath();

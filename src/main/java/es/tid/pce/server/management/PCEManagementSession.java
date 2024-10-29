@@ -61,7 +61,6 @@ import es.tid.pce.server.wson.ReservationManager;
 import es.tid.pce.utils.StringToPCEP;
 import es.tid.rsvp.objects.subobjects.IPv4prefixEROSubobject;
 import es.tid.rsvp.objects.subobjects.UnnumberIfIDEROSubobject;
-import es.tid.tedb.DomainTEDB;
 import es.tid.util.UtilsFunctions;
 
 /**
@@ -234,7 +233,7 @@ public class PCEManagementSession extends Thread {
 					out.print(info + "\r\n");
 				} else if (command.equals("show topology") || command.equals("3")) {
 					// Print intradomain and interDomain links
-					out.print(this.domainPCEServer.getTed().printTopology());
+// ===					out.print(this.domainPCEServer.getTed().printTopology());
 
 				} else if (command.equals("queue size") || command.equals("4")) {
 					out.println("num pets " +  this.domainPCEServer.getPCCRequestDispatcher().queueSize());
@@ -245,7 +244,7 @@ public class PCEManagementSession extends Thread {
 
 				} else if (command.equals("show reachability") || command.equals("6")) {
 					// tedb.getDomainReachabilityIPv4Prefix();
-					out.println(this.domainPCEServer.getTed().getReachabilityEntry().getPrefix());
+//===					out.println(this.domainPCEServer.getTed().getReachabilityEntry().getPrefix());
 
 				} else if (command.equals("show lsps") || command.equals("7")) {
 					out.println("Enjoy watching the LSPs the PCE has in his database");
