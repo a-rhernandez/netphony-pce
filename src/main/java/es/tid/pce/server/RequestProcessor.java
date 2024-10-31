@@ -25,7 +25,7 @@ import es.tid.pce.pcep.objects.RequestParameters;
 import es.tid.pce.pcep.objects.tlvs.NoPathTLV;
 import es.tid.rsvp.objects.subobjects.IPv4prefixEROSubobject;
 import es.tid.rsvp.objects.subobjects.UnnumberIfIDEROSubobject;
-import es.tid.tedb.IntraDomainEdge;
+
 
 
 public class RequestProcessor implements Runnable {
@@ -34,13 +34,11 @@ public class RequestProcessor implements Runnable {
 	/*
 	 * Procesa Solicitudes PCEP en un hilo
 	 */
-	
-	
 	private PCEPRequest req;	// La solicitud PCEP que debe procesar
 	private DataOutputStream out; // Flujo de salida para enviar la respuesta despues de procesar
 	private Logger log=LoggerFactory.getLogger("PCEServer");;
 	
-	private SimpleDirectedWeightedGraph<Object,IntraDomainEdge> networkGraph; //Representación del grafo para realizar el calculo de la ruta
+//==	private SimpleDirectedWeightedGraph<Object,IntraDomainEdge> networkGraph; //Representación del grafo para realizar el calculo de la ruta
 	
 	private ParentPCERequestManager childPCERequestManager; // Administrador de consultas 
 	
@@ -111,29 +109,28 @@ public class RequestProcessor implements Runnable {
 	
 		
 		log.info("Check if we have source and destination in our TED");
-//	===		if (!((networkGraph.containsVertex(source_router_id_addr))&&(networkGraph.containsVertex(dest_router_id_addr)))){
+//		if (!((networkGraph.containsVertex(source_router_id_addr))&&(networkGraph.containsVertex(dest_router_id_addr)))){
 			if (childPCERequestManager!=null){
 				log.info("Source or destination are NOT in the TED, asking the parent PCE");
 				//PCEPRequest msg_req=new PCEPRequest();
 				PCEPResponse resp=childPCERequestManager.newRequest(req);
 				try {
-					try {
-						resp.encode();
-					} catch (PCEPProtocolViolationException e1) {
-						// TODO Auto-generated catch block
-						log.error("Response from Parent PCE not valid!!!!!");
-						return;
-					}
+					resp.encode();
 					log.info("Request from Parent PCE processeed, about to send response");
 					out.write(resp.getBytes());
 					out.flush();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}catch (PCEPProtocolViolationException e1) {
+				// TODO Auto-generated catch block
+					log.error("Response from Parent PCE not valid!!!!!");
+					return;
 				}
+				
 				return;				
-			}
-			else{
+			}else{
+				
 				log.warn("Source or destination are NOT in the TED");
 				ComputingResponse m_resp=new ComputingResponse();
 				Response response=new Response();
@@ -143,14 +140,14 @@ public class RequestProcessor implements Runnable {
 				NoPath noPath= new NoPath();
 				noPath.setNatureOfIssue(ObjectParameters.NOPATH_NOPATH_SAT_CONSTRAINTS);
 				NoPathTLV noPathTLV=new NoPathTLV();
-				if (!((networkGraph.containsVertex(source_router_id_addr)))){
-					log.debug("Unknown source");	
-					noPathTLV.setUnknownSource(true);	
-				}
-				if (!((networkGraph.containsVertex(dest_router_id_addr)))){
-					log.debug("Unknown destination");
-					noPathTLV.setUnknownDestination(true);	
-				}
+//				if (!((networkGraph.containsVertex(source_router_id_addr)))){
+//					log.debug("Unknown source");	
+//					noPathTLV.setUnknownSource(true);	
+//				}
+//				if (!((networkGraph.containsVertex(dest_router_id_addr)))){
+//					log.debug("Unknown destination");
+//					noPathTLV.setUnknownDestination(true);	
+//				}
 				
 				noPath.setNoPathTLV(noPathTLV);				
 				response.setNoPath(noPath);
@@ -172,11 +169,12 @@ public class RequestProcessor implements Runnable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 				log.info("Response sent!!");
-				return;
-			}
+				
+				}
 			
-		}
+			
 		long tiempoini =System.currentTimeMillis();
 		ComputingResponse m_resp=new ComputingResponse();
 		Response response=new Response();
@@ -230,8 +228,9 @@ public class RequestProcessor implements Runnable {
 			 */
 			
 			
-			DijkstraShortestPath<Object,IntraDomainEdge>  dsp=new DijkstraShortestPath<Object,IntraDomainEdge> (networkGraph, source_router_id_addr, dest_router_id_addr);
-			GraphPath<Object,IntraDomainEdge> gp=dsp.getPath();
+//			DijkstraShortestPath<Object,IntraDomainEdge>  dsp=new DijkstraShortestPath<Object,IntraDomainEdge> (networkGraph, source_router_id_addr, dest_router_id_addr);
+//			GraphPath<Object,IntraDomainEdge> gp=dsp.getPath();
+			
 			long tiempofin =System.currentTimeMillis();
 			long tiempotot=tiempofin-tiempoini;
 			log.info("Ha tardado "+tiempotot+" milisegundos");
@@ -247,7 +246,7 @@ public class RequestProcessor implements Runnable {
 			ExplicitRouteObject ero= new ExplicitRouteObject();
 			
 			
-			List<IntraDomainEdge> edge_list=gp.getEdgeList();
+//			List<IntraDomainEdge> edge_list=gp.getEdgeList();
 			/* PARA EL CASO DE IPV4, PONGO AHORA IF NO NUMERADOS
 			int i;
 			for (i=0;i<edge_list.size();i++){
@@ -261,15 +260,15 @@ public class RequestProcessor implements Runnable {
 			eroso.setPrefix(32);
 			ero.addEROSubobject(eroso);*/
 			int i;
-			for (i=0;i<edge_list.size();i++){
-				UnnumberIfIDEROSubobject eroso= new UnnumberIfIDEROSubobject();
-				eroso.setRouterID((Inet4Address)edge_list.get(i).getSource());
-				eroso.setInterfaceID(edge_list.get(i).getSrc_if_id());
-				eroso.setLoosehop(false);
-				ero.addEROSubobject(eroso);
-			 }
+//			for (i=0;i<edge_list.size();i++){
+//				UnnumberIfIDEROSubobject eroso= new UnnumberIfIDEROSubobject();
+//				eroso.setRouterID((Inet4Address)edge_list.get(i).getSource());
+//				eroso.setInterfaceID(edge_list.get(i).getSrc_if_id());
+//				eroso.setLoosehop(false);
+//				ero.addEROSubobject(eroso);
+//			 }
 			IPv4prefixEROSubobject eroso= new IPv4prefixEROSubobject();
-			eroso.setIpv4address((Inet4Address)edge_list.get(edge_list.size()-1).getTarget());
+			//eroso.setIpv4address((Inet4Address)edge_list.get(edge_list.size()-1).getTarget());
 			eroso.setPrefix(32);
 			ero.addEROSubobject(eroso);
 			path.setEro(ero);

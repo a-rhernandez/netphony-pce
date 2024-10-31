@@ -51,6 +51,15 @@ public class DelegationManager {
 	 */
 	private Logger log;
 
+	
+	/*
+	 * 
+	 * LLAMAR A TERAFLOW
+	 * 
+	 * 
+	 */
+	
+	
 	public DelegationManager(SingleDomainLSPDB lsp_database) {
 		this.lsp_database = lsp_database;
 		log = LoggerFactory.getLogger("PCEServer");

@@ -27,18 +27,12 @@ import org.slf4j.LoggerFactory;
 
 import es.tid.pce.computingEngine.ReportDispatcher;
 import es.tid.pce.computingEngine.RequestDispatcher;
-import es.tid.pce.computingEngine.algorithms.ComputingAlgorithmManager;
-import es.tid.pce.computingEngine.algorithms.ComputingAlgorithmManagerSSON;
-import es.tid.pce.computingEngine.algorithms.ComputingAlgorithmPreComputation;
-import es.tid.pce.computingEngine.algorithms.ComputingAlgorithmPreComputationSSON;
-import es.tid.pce.computingEngine.algorithms.multiLayer.OperationsCounter;
 import es.tid.pce.pcepsession.PCEPSessionsInformation;
-import es.tid.pce.server.communicationpce.BackupSessionManagerTask;
-import es.tid.pce.server.communicationpce.CollaborationPCESessionManager;
+
 import es.tid.pce.server.lspdb.ReportDB_Handler;
 import es.tid.pce.server.lspdb.SingleDomainLSPDB;
 import es.tid.pce.server.management.PCEManagementSever;
-import es.tid.pce.server.wson.ReservationManager;
+
 
 public class DomainPCEServer implements Runnable{
 
@@ -53,10 +47,7 @@ public class DomainPCEServer implements Runnable{
 	private PCEPSessionsInformation pcepSessionsInformation;
 	
 
-	/*
-	 * OPcounter: used for Multilayer PCE
-	 */
-	private static OperationsCounter OPcounter;
+	
 
 	private static ReportDB_Handler rptdb;
 	
@@ -176,9 +167,6 @@ public class DomainPCEServer implements Runnable{
 			log.info("PCEServer: PCE is SR capable with MSD="+pcepSessionsInformation.getMSD());
 		}
 
-		
-
-		
 		if (params.isStateful())
 		{
 			//FIXME: By now, U flag is ALWAYS TRUE.
@@ -195,22 +183,13 @@ public class DomainPCEServer implements Runnable{
 
 		/***/
 
-	
-
-		OPcounter = new OperationsCounter();
-
-	
-
-		RequestDispatcher PCCRequestDispatcherChild = null;
 		
-
+///==		RequestDispatcher PCCRequestDispatcherChild = null;
+		
 		//The Request Dispatcher, needed to dispatch the requests coming from the PCCs
 		log.info("Initializing Request Dispatcher");
 		
-
-		
-		
-		CollaborationPCESessionManager	collaborationPCESessionManager=null;
+//==		CollaborationPCESessionManager	collaborationPCESessionManager=null;
 		
 //		if ((params.getParentPCEAddress()!=null)){			
 //			if (params.isCollaborativePCEs()){//STRONGEST: Collaborative PCEs						
@@ -233,7 +212,6 @@ public class DomainPCEServer implements Runnable{
 		//Notification dispatcher
 		NotificationDispatcher nd=new NotificationDispatcher(); // Nueva version sin reservattion Manager
 
-
 		if(params.algorithmRuleList.size()==0){
 
 			log.warn("There are no registered algorithms besides the default");
@@ -242,16 +220,14 @@ public class DomainPCEServer implements Runnable{
 		// When there is a parent PCE, connect to the parent PCE
 		
 		//Start the management server
-		pms=new PCEManagementSever(this);	
+		pms= new PCEManagementSever(this);	
 		pms.start(); 
 
-		
-		
-		
 		//STRONGEST: Collaborative PCEs
 		
 		listening = true;
 		try {
+			
 			log.info("Listening on port: "+params.getPCEServerPort());
 
 			// Local PCE address for multiple network interfaces in a single computer
@@ -290,10 +266,10 @@ public class DomainPCEServer implements Runnable{
 			}
 
 
-			//while (listening) {
+			
 			while (listening) {
 				new DomainPCESession(serverSocket.accept(),params,PCCRequestDispatcher,nd,pcepSessionsInformation,PCCReportDispatcher,iniDispatcher).start();
-				//null,ted,pcm.getChildPCERequestManager()).start(
+//				null,ted,pcm.getChildPCERequestManager()).start(
 //				if (params.isCollaborativePCEs())
 //					//SIN TED NI RESERVATION MANAGER
 //					new DomainPCESession(serverSocket.accept(),params,PCCRequestDispatcher,nd,collaborationPCESessionManager,pcepSessionsInformation,PCCReportDispatcher).start();
@@ -342,13 +318,7 @@ public class DomainPCEServer implements Runnable{
 		this.pcepSessionsInformation = pcepSessionsInformation;
 	}
 
-	public static OperationsCounter getOPcounter() {
-		return OPcounter;
-	}
-
-	public static void setOPcounter(OperationsCounter oPcounter) {
-		OPcounter = oPcounter;
-	}
+	
 
 	public static ReportDB_Handler getRptdb() {
 		return rptdb;

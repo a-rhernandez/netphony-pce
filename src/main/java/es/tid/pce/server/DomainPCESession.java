@@ -34,12 +34,9 @@ import es.tid.pce.pcepsession.DeadTimerThread;
 import es.tid.pce.pcepsession.GenericPCEPSession;
 import es.tid.pce.pcepsession.KeepAliveThread;
 import es.tid.pce.pcepsession.PCEPSessionsInformation;
-import es.tid.pce.server.communicationpce.CollaborationPCESessionManager;
 import es.tid.pce.server.management.PCEManagementSession;
-import es.tid.pce.server.wson.ReservationManager;
 import es.tid.util.UtilsFunctions;
 import es.tid.pce.pcepsession.PCEPValues;
-import es.tid.pce.server.communicationpce.RollSessionType;
 
 /** Thread that maintains a PCEP Session with one PCC Client. 
  * <p> Reads the first message, and if it is a valid OPEN Message, initiates a new 
@@ -75,7 +72,6 @@ public class DomainPCESession extends GenericPCEPSession{
 	
 	private static long lastInternalSessionID=0;
 
-	private  CollaborationPCESessionManager collaborationPCESessionManager=null;
 	
 	private SingleDomainInitiateDispatcher iniDispatcher;
 		
@@ -111,34 +107,7 @@ public class DomainPCESession extends GenericPCEPSession{
 	}
 
 
-	
 
-	public DomainPCESession(Socket s, PCEServerParameters params, RequestDispatcher requestDispatcher,NotificationDispatcher notificationDispatcher, ReservationManager rm, 
-			CollaborationPCESessionManager collaborationPCESessionManager, 
-			PCEPSessionsInformation pcepSessionInformation, ReportDispatcher reportDispatcher) {
-		super(pcepSessionInformation);
-		this.setFSMstate(PCEPValues.PCEP_STATE_IDLE);
-		log=LoggerFactory.getLogger("PCEServer");
-		log.info("New Domain PCESession: "+s);
-		this.socket = s;
-
-		try {
-			s.setTcpNoDelay(params.isNodelay());
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
-		this.requestDispatcher=requestDispatcher;
-		this.params = params;
-		timer=new Timer();
-		this.keepAliveLocal=params.getKeepAliveTimer();
-		this.deadTimerLocal=params.getDeadTimer();
-		this.notificationDispatcher=notificationDispatcher;
-// ===		this.rm=rm;
-		this.internalSessionID=getNewInternalSessionID();
-		this.collaborationPCESessionManager=collaborationPCESessionManager;
-		this.reportDispatcher = reportDispatcher;
-		
-	}
 
 
 	/**
@@ -171,11 +140,7 @@ public class DomainPCESession extends GenericPCEPSession{
 		//Session is UP now, start timers
 		log.info("PCE Session succesfully established!!");	
 		//Poner que tipo de session es?? como lo se??
-		if (collaborationPCESessionManager!=null){
-			int roll=RollSessionType.COLLABORATIVE_PCE;/*Como seeeee esl rollllll*/
-			//Si el roll es de PCE de backup, tengo que meter el Dataoutput en collaborative PCEs			
-			collaborationPCESessionManager.getOpenedSessionsManager().registerNewSession(/*this.remoteDomainId,*//*this.remotePCEId,*/ out,roll);
-		}
+		
 		this.deadTimerT=new DeadTimerThread(this, this.deadTimerLocal);
 		startDeadTimer();	
 		this.keepAliveT=new KeepAliveThread(out, this.keepAliveLocal);
@@ -355,8 +320,9 @@ public class DomainPCESession extends GenericPCEPSession{
 							e.printStackTrace();
 							break;
 						}
-						//RequestProcessor rp=new RequestProcessor(p_req,out, ted,null);	
-						//req.execute(rp);
+//						RequestProcessor rp=new RequestProcessor(p_req,out,null);	
+//						req.execute(rp);
+						
 						requestDispatcher.dispathRequests(p_req,out);
 					
 						break;
@@ -509,8 +475,6 @@ public ReportDispatcher getReportDispatcher() {
 public void setReportDispatcher(ReportDispatcher reportDispatcher) {
 	this.reportDispatcher = reportDispatcher;
 }
-
-
 
 
 

@@ -27,7 +27,6 @@ import es.tid.pce.pcep.objects.SRP;
 import es.tid.rsvp.objects.subobjects.DataPathIDEROSubobject;
 import es.tid.rsvp.objects.subobjects.EROSubobject;
 import es.tid.rsvp.objects.subobjects.UnnumberIfIDEROSubobject;
-import es.tid.tedb.ReachabilityManager;
 import es.tid.util.UtilsFunctions;
 
 /**
@@ -53,7 +52,7 @@ public class ComputingResponse
 		ReportList = reportList;
 	}
 	
-	private ReachabilityManager reachabilityManager;
+//	private ReachabilityManager reachabilityManager;
 	
 	/**
 	 * Construct new PCEP Request from scratch
@@ -255,7 +254,7 @@ public class ComputingResponse
 			if ((ero.getEROSubobjectList().get(i)) instanceof UnnumberIfIDEROSubobject)
 			{
 				UnnumberIfIDEROSubobject unAux = (UnnumberIfIDEROSubobject)ero.getEROSubobjectList().get(i);
-				firstID = reachabilityManager.getDomain(unAux.getRouterID());
+//				firstID = reachabilityManager.getDomain(unAux.getRouterID());
 				break;
 			}
 		}
@@ -302,7 +301,7 @@ public class ComputingResponse
 				if ((ero.getEROSubobjectList().get(offset)) instanceof UnnumberIfIDEROSubobject)
 				{
 					UnnumberIfIDEROSubobject unAux = (UnnumberIfIDEROSubobject)ero.getEROSubobjectList().get(i);
-					currentID = reachabilityManager.getDomain(unAux.getRouterID());
+//					currentID = reachabilityManager.getDomain(unAux.getRouterID());
 					
 					
 					if (currentID!=null && firstID.equals(currentID))
@@ -379,15 +378,15 @@ public class ComputingResponse
 		this.messageBytes = messageBytes;
 	}
 
-	public ReachabilityManager getReachabilityManager()
-	{
-		return reachabilityManager;
-	}
-
-	public void setReachabilityManager(ReachabilityManager reachabilityManager) 
-	{
-		this.reachabilityManager = reachabilityManager;
-	}
+//	public ReachabilityManager getReachabilityManager()
+//	{
+//		return reachabilityManager;
+//	}
+//
+//	public void setReachabilityManager(ReachabilityManager reachabilityManager) 
+//	{
+//		this.reachabilityManager = reachabilityManager;
+//	}
 	
 	public String toString(){
 		StringBuffer sb=new StringBuffer(ResponseList.size()*100);

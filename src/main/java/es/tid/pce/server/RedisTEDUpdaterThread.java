@@ -8,7 +8,7 @@ import es.tid.ospf.ospfv2.OSPFv2LinkStateUpdatePacket;
 import es.tid.ospf.ospfv2.lsa.LSA;
 import es.tid.ospf.ospfv2.lsa.LSATypes;
 import es.tid.ospf.ospfv2.lsa.OSPFTEv2LSA;
-import es.tid.tedb.DatabaseControlSimplifiedLSA;
+//import es.tid.tedb.DatabaseControlSimplifiedLSA;
 
 public class RedisTEDUpdaterThread extends Thread{
 
@@ -36,11 +36,11 @@ public class RedisTEDUpdaterThread extends Thread{
 				for (int i =0;i< lsaList.size();i++){
 					if (lsaList.get(i).getLStype() == LSATypes.TYPE_10_OPAQUE_LSA){
 						lsa=(OSPFTEv2LSA)lsaList.get(i);
-						DatabaseControlSimplifiedLSA dcsl = new DatabaseControlSimplifiedLSA();
-						dcsl.fillSimplifiedLsa(lsa);
-						String jsonLSA = dcsl.logJsonSimplifiedLSA();
-						RedisDatabaseHandler rdh = new RedisDatabaseHandler();
-						rdh.write("LSA:"+dcsl.getAdvertisingRouter().getHostAddress()+":"+dcsl.getLinkId().getHostAddress(),jsonLSA);
+//						DatabaseControlSimplifiedLSA dcsl = new DatabaseControlSimplifiedLSA();
+//						dcsl.fillSimplifiedLsa(lsa);
+//						String jsonLSA = dcsl.logJsonSimplifiedLSA();
+//						RedisDatabaseHandler rdh = new RedisDatabaseHandler();
+//						rdh.write("LSA:"+dcsl.getAdvertisingRouter().getHostAddress()+":"+dcsl.getLinkId().getHostAddress(),jsonLSA);
 					}
 				}
 			} catch (InterruptedException e) {

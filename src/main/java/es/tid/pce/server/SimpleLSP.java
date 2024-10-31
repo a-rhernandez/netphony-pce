@@ -1,4 +1,4 @@
-package es.tid.pce.parentPCE.MDLSPDB;
+package es.tid.pce.server;
 
 public class SimpleLSP {
 	

@@ -57,9 +57,6 @@ public class NotificationProcessorThread extends Thread {
 				        case ObjectParameters.PCEP_NOTIFICATION_TYPE_CANCEL_RESERVATION:
 				            log.info("PCEP NOTIFICATION TYPE: CANCEL RESERVATION");
 				            break;
-				        case ObjectParameters.PCEP_NOTIFICATION_TYPE_PRERESERVE:
-				            log.info("PCEP NOTIFICATION TYPE: PRERESERVE");
-				            break;
 				        case ObjectParameters.PCEP_NOTIFICATION_VALUE_QUERY:
 				            log.info("PCEP NOTIFICATION VALUE: QUERY");
 				            break;
@@ -69,6 +66,22 @@ public class NotificationProcessorThread extends Thread {
 				        case ObjectParameters.PCEP_NOTIFICATION_VALUE_PATH_RESERVATION:
 				            log.info("PCEP NOTIFICATION VALUE: PATH RESERVATION");
 				            break;
+				        case ObjectParameters.PCEP_NOTIFICATION_TYPE_PRERESERVE:	{
+							log.info("PCEP NOTIFICATION TYPE: PRERESERVE");														
+							//Crear una lista de source vertex, otra de target, wavelenght, time, bidirectional
+							LinkedList<Object> sourceVertexList= new LinkedList<Object>();
+							LinkedList<Object> targetVertexList= new LinkedList<Object>();
+							DWDMWavelengthLabel dwdmWavelengthLabel= new DWDMWavelengthLabel();							
+							int lambdaToModify =0;
+							initializeVariables(notificationList.get(i).getNotificationTLV().geteRO().getEROSubobjectList(),sourceVertexList,targetVertexList,dwdmWavelengthLabel);
+//===							lambdaToModify = dwdmWavelengthLabel.getN() - ((SimpleTEDB)reservationManager.getTed()).getWSONinfo().getnMin();
+													
+							//FIXME: aqui estamos suponiendo que todo el camino tiene la misma lambda!!!
+							long time=notificationList.get(i).getNotificationTLV().getTime();						
+							boolean bidirectional=notificationList.get(i).getNotificationTLV().isBidirectional();
+//							reservationManager.reserve(sourceVertexList, targetVertexList, lambdaToModify,time, bidirectional);
+							break;
+						}
 				        default:
 				            log.error("Error: Unexpected Message");
 				            break;

@@ -14,9 +14,7 @@ import redis.clients.jedis.Jedis;
 
 
 
-import es.tid.pce.parentPCE.MD_LSP;
-import es.tid.pce.parentPCE.MDLSPDB.SimpleLSP;
-import es.tid.pce.parentPCE.MDLSPDB.SimpleLSPhop;
+
 import es.tid.pce.pcep.objects.ExplicitRouteObject;
 import es.tid.pce.pcep.objects.LSP;
 import es.tid.pce.server.RedisDatabaseHandler;

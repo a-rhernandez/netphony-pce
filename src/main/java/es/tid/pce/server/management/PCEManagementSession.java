@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import es.tid.pce.computingEngine.RequestDispatcher;
 import es.tid.pce.computingEngine.RequestProcessorThread;
-import es.tid.pce.computingEngine.algorithms.ComputingAlgorithmManager;
 import es.tid.pce.pcep.PCEPProtocolViolationException;
 import es.tid.pce.pcep.constructs.PCEPIntiatedLSP;
 import es.tid.pce.pcep.constructs.Path;
@@ -55,9 +54,7 @@ import es.tid.pce.server.DomainPCEServer;
 import es.tid.pce.server.DomainPCESession;
 import es.tid.pce.server.IniPCCManager;
 import es.tid.pce.server.PCEServerParameters;
-import es.tid.pce.server.communicationpce.CollaborationPCESessionManager;
 import es.tid.pce.server.delegation.DelegationManager;
-import es.tid.pce.server.wson.ReservationManager;
 import es.tid.pce.utils.StringToPCEP;
 import es.tid.rsvp.objects.subobjects.IPv4prefixEROSubobject;
 import es.tid.rsvp.objects.subobjects.UnnumberIfIDEROSubobject;
@@ -212,25 +209,7 @@ public class PCEManagementSession extends Thread {
 					// out.print("PCE Id: "+pceIds.nextElement()+ " Domain Id:
 					// "+domains.nextElement()+"\r\n");
 					// }
-				} else if (command.equals("show algorithms list") || command.equals("show algo list")
-						|| command.equals("2")) {
-					RequestProcessorThread[] threads = this.domainPCEServer.getPCCRequestDispatcher().getThreads();
-					String info = "";
-					if (threads.length > 0) {
-						Hashtable<Integer, ComputingAlgorithmManager> htcaSingle = threads[0].getSingleAlgorithmList();
-						Enumeration<Integer> keys = htcaSingle.keys();
-						while (keys.hasMoreElements()) {
-							Integer inte = keys.nextElement();
-							info = info + "OF =" + inte + "; ";
-						}
-						Hashtable<Integer, ComputingAlgorithmManager> htcaSvec = threads[0].getSvecAlgorithmList();
-						Enumeration<Integer> keys2 = htcaSvec.keys();
-						while (keys2.hasMoreElements()) {
-							Integer inte = keys2.nextElement();
-							info = info + "OF =" + inte + "and SVEC; ";
-						}
-					}
-					out.print(info + "\r\n");
+				
 				} else if (command.equals("show topology") || command.equals("3")) {
 					// Print intradomain and interDomain links
 // ===					out.print(this.domainPCEServer.getTed().printTopology());

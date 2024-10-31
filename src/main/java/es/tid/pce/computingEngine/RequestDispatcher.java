@@ -1,8 +1,6 @@
 package es.tid.pce.computingEngine;
 
-import es.tid.pce.computingEngine.algorithms.ComputingAlgorithmManager;
-import es.tid.pce.computingEngine.algorithms.ComputingAlgorithmManagerSSON;
-import es.tid.pce.computingEngine.algorithms.multiLayer.OperationsCounter;
+
 import es.tid.pce.pcep.constructs.Request;
 import es.tid.pce.pcep.constructs.SVECConstruct;
 import es.tid.pce.pcep.messages.PCEPInitiate;
@@ -12,10 +10,6 @@ import es.tid.pce.pcep.objects.ObjectiveFunction;
 import es.tid.pce.pcep.objects.RequestParameters;
 import es.tid.pce.pcep.objects.tlvs.MaxRequestTimeTLV;
 import es.tid.pce.server.ParentPCERequestManager;
-import es.tid.pce.server.communicationpce.CollaborationPCESessionManager;
-import es.tid.pce.server.wson.ReservationManager;
-import es.tid.tedb.DomainTEDB;
-import es.tid.tedb.TEDB;
 
 import java.io.DataOutputStream;
 import java.net.Inet4Address;
@@ -84,7 +78,7 @@ public class RequestDispatcher {
 	  * @param cpcerm
 	  * @param analyzeRequestTime
 	  */
-	 public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime)
+	 public RequestDispatcher(int nThreads,ParentPCERequestManager cpcerm, boolean analyzeRequestTime)
 	    {
 		log=LoggerFactory.getLogger("PCEServer");
 	    this.nThreads = nThreads;
@@ -95,7 +89,7 @@ public class RequestDispatcher {
 	    numOPsLock = new ReentrantLock();
 	        for (int i=0; i<this.nThreads; i++) {
 	        	log.info("Starting Request Processor Thread");	        	
-	            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime);
+	            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime);
 	            threads[i].setPriority(Thread.MAX_PRIORITY);
 	            threads[i].start();
 	            
@@ -113,113 +107,113 @@ public class RequestDispatcher {
 	 * @param intraTEDBs internal tedbs
 	 */
 
-	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime,Hashtable<String,TEDB> intraTEDBs)
-	{
-		log=LoggerFactory.getLogger("PCEServer");
-		this.nThreads = nThreads;
-		pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
-		pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
-		pendingRequestList=new Hashtable<Long,ComputingRequest>();
-		threads = new RequestProcessorThread[nThreads];
-		numOPsLock = new ReentrantLock();
-		for (int i=0; i<this.nThreads; i++) {
-			log.info("Starting Request Processor Thread");
-			threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime, intraTEDBs);
-			threads[i].setPriority(Thread.MAX_PRIORITY);
-			threads[i].start();
+//	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime,Hashtable<String,TEDB> intraTEDBs)
+//	{
+//		log=LoggerFactory.getLogger("PCEServer");
+//		this.nThreads = nThreads;
+//		pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
+//		pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
+//		pendingRequestList=new Hashtable<Long,ComputingRequest>();
+//		threads = new RequestProcessorThread[nThreads];
+//		numOPsLock = new ReentrantLock();
+//		for (int i=0; i<this.nThreads; i++) {
+//			log.info("Starting Request Processor Thread");
+//			threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime, intraTEDBs);
+//			threads[i].setPriority(Thread.MAX_PRIORITY);
+//			threads[i].start();
+//
+//		}
+//
+//	}
+//
+//
+//	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime, boolean useMaxReqTime, ReservationManager reservationManager)
+//    {
+//		log=LoggerFactory.getLogger("PCEServer");
+//	    this.nThreads = nThreads;
+//	    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
+//	    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
+//	    pendingRequestList=new Hashtable<Long,ComputingRequest>();
+//	    threads = new RequestProcessorThread[nThreads];
+//
+//        for (int i=0; i<this.nThreads; i++) {
+//        	//log.info("TEEED:: "+ted.printTopology());
+//        	log.info("1. Starting Request Processor Thread!");	        	
+//            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime,useMaxReqTime, reservationManager);
+//            threads[i].setPriority(Thread.MAX_PRIORITY);
+//            threads[i].start();
+//            
+//        }
+//    }
+//
+//	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime, boolean useMaxReqTime, ReservationManager reservationManager, OperationsCounter OPcounter, boolean isMult)
+//    	{
+//			log=LoggerFactory.getLogger("PCEServer");
+//		    this.nThreads = nThreads;
+//		    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
+//		    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
+//		    pendingRequestList=new Hashtable<Long,ComputingRequest>();
+//		    threads = new RequestProcessorThread[nThreads];
+//		   
+//	        for (int i=0; i<this.nThreads; i++) {
+//	        	log.info("Starting Request Processor Thread!");	        	
+//	            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime,useMaxReqTime, reservationManager, OPcounter, isMult);
+//	            threads[i].setPriority(Thread.MAX_PRIORITY);
+//	            threads[i].start();
+//	        }
+//    	}
+//
+//
+//	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime,CollaborationPCESessionManager collaborationPCESessionManager)
+//	    {
+//			log=LoggerFactory.getLogger("PCEServer");
+//		    this.nThreads = nThreads;
+//		    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
+//		    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
+//		    pendingRequestList=new Hashtable<Long,ComputingRequest>();
+//		    threads = new RequestProcessorThread[nThreads];
+//
+//	        for (int i=0; i<this.nThreads; i++) {
+//	        	log.info("Starting Request Processor Thread!");        	
+//	            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime, collaborationPCESessionManager);
+//	            threads[i].setPriority(Thread.MAX_PRIORITY);
+//	            threads[i].start();
+//	            
+//	        }
+//	    }
 
-		}
-
-	}
-
-
-	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime, boolean useMaxReqTime, ReservationManager reservationManager)
-    {
-		log=LoggerFactory.getLogger("PCEServer");
-	    this.nThreads = nThreads;
-	    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
-	    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
-	    pendingRequestList=new Hashtable<Long,ComputingRequest>();
-	    threads = new RequestProcessorThread[nThreads];
-
-        for (int i=0; i<this.nThreads; i++) {
-        	//log.info("TEEED:: "+ted.printTopology());
-        	log.info("1. Starting Request Processor Thread!");	        	
-            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime,useMaxReqTime, reservationManager);
-            threads[i].setPriority(Thread.MAX_PRIORITY);
-            threads[i].start();
-            
-        }
-    }
-
-	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime, boolean useMaxReqTime, ReservationManager reservationManager, OperationsCounter OPcounter, boolean isMult)
-    	{
-			log=LoggerFactory.getLogger("PCEServer");
-		    this.nThreads = nThreads;
-		    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
-		    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
-		    pendingRequestList=new Hashtable<Long,ComputingRequest>();
-		    threads = new RequestProcessorThread[nThreads];
-		   
-	        for (int i=0; i<this.nThreads; i++) {
-	        	log.info("Starting Request Processor Thread!");	        	
-	            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime,useMaxReqTime, reservationManager, OPcounter, isMult);
-	            threads[i].setPriority(Thread.MAX_PRIORITY);
-	            threads[i].start();
-	        }
-    	}
-
-
-	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime,CollaborationPCESessionManager collaborationPCESessionManager)
-	    {
-			log=LoggerFactory.getLogger("PCEServer");
-		    this.nThreads = nThreads;
-		    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
-		    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
-		    pendingRequestList=new Hashtable<Long,ComputingRequest>();
-		    threads = new RequestProcessorThread[nThreads];
-
-	        for (int i=0; i<this.nThreads; i++) {
-	        	log.info("Starting Request Processor Thread!");        	
-	            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime, collaborationPCESessionManager);
-	            threads[i].setPriority(Thread.MAX_PRIORITY);
-	            threads[i].start();
-	            
-	        }
-	    }
-
-	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime, boolean useMaxReqTime, ReservationManager reservationManager,CollaborationPCESessionManager collaborationPCESessionManager)
-    {
-		log=LoggerFactory.getLogger("PCEServer");
-	    this.nThreads = nThreads;
-	    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
-	    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
-	    pendingRequestList=new Hashtable<Long,ComputingRequest>();
-	    threads = new RequestProcessorThread[nThreads];
-
-        for (int i=0; i<this.nThreads; i++) {
-        	log.info("Starting Request Processor Thread!");       	
-            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime,useMaxReqTime, reservationManager,collaborationPCESessionManager);
-            threads[i].setPriority(Thread.MAX_PRIORITY);
-            threads[i].start();
-            
-        }
-    }
+//	public RequestDispatcher(int nThreads,TEDB ted,ParentPCERequestManager cpcerm, boolean analyzeRequestTime, boolean useMaxReqTime, ReservationManager reservationManager,CollaborationPCESessionManager collaborationPCESessionManager)
+//    {
+//		log=LoggerFactory.getLogger("PCEServer");
+//	    this.nThreads = nThreads;
+//	    pathComputingRequestQueue = new LinkedBlockingQueue<ComputingRequest>();
+//	    pathComputingRequestRetryQueue= new LinkedBlockingQueue<ComputingRequest>();
+//	    pendingRequestList=new Hashtable<Long,ComputingRequest>();
+//	    threads = new RequestProcessorThread[nThreads];
+//
+//        for (int i=0; i<this.nThreads; i++) {
+//        	log.info("Starting Request Processor Thread!");       	
+//            threads[i] = new RequestProcessorThread(pathComputingRequestQueue,ted,cpcerm,pathComputingRequestRetryQueue,analyzeRequestTime,useMaxReqTime, reservationManager,collaborationPCESessionManager);
+//            threads[i].setPriority(Thread.MAX_PRIORITY);
+//            threads[i].start();
+//            
+//        }
+//    }
 	
-	public void registerAlgorithm(AlgorithmRule rule, ComputingAlgorithmManager algortithmManager ){
-		for (int i=0; i<this.nThreads; i++) {
-        	log.info("Registering algorithm im processor");            
-            threads[i].registerAlgorithm(rule,algortithmManager);
-        }
-					
-	}
-	public void registerAlgorithmSSON(AlgorithmRule rule, ComputingAlgorithmManagerSSON algortithmManager ){
-		for (int i=0; i<this.nThreads; i++) {
-        	log.info("Registering algorithm im processor");            
-            threads[i].registerAlgorithmSSON(rule,algortithmManager);
-        }
-					
-	}
+//	public void registerAlgorithm(AlgorithmRule rule, ComputingAlgorithmManager algortithmManager ){
+//		for (int i=0; i<this.nThreads; i++) {
+//        	log.info("Registering algorithm im processor");            
+//            threads[i].registerAlgorithm(rule,algortithmManager);
+//        }
+//					
+//	}
+//	public void registerAlgorithmSSON(AlgorithmRule rule, ComputingAlgorithmManagerSSON algortithmManager ){
+//		for (int i=0; i<this.nThreads; i++) {
+//        	log.info("Registering algorithm im processor");            
+//            threads[i].registerAlgorithmSSON(rule,algortithmManager);
+//        }
+//					
+//	}
 	    
 	public void dispathRequests(PCEPRequest reqMessage, DataOutputStream out){
 		dispathRequests(reqMessage,  out,null);
@@ -259,6 +253,7 @@ public class RequestDispatcher {
 		log.info("Dispatching Initiate message");
 		
 		ComputingRequest cr=new ComputingRequest();
+		
 		cr.setOut(out);
 
 		LinkedList<Request> requestList = new LinkedList<Request>();

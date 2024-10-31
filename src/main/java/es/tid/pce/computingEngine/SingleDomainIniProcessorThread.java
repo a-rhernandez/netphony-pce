@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import es.tid.pce.parentPCE.ParentPCESession;
 import es.tid.pce.pcep.constructs.EndPointAndRestrictions;
 import es.tid.pce.pcep.constructs.IPv4AddressEndPoint;
 import es.tid.pce.pcep.constructs.PCEPIntiatedLSP;
@@ -108,8 +107,8 @@ public class SingleDomainIniProcessorThread extends Thread {
 				PCEPIntiatedLSP piniToNode = new PCEPIntiatedLSP();
 				SRP srp = new SRP();
 				// fixme: sacar de otro sitio
-				long sRP_ID_number_to_node = ParentPCESession.getNewReqIDCounter();
-				srp.setSRP_ID_number(sRP_ID_number_to_node);
+//				long sRP_ID_number_to_node = ParentPCESession.getNewReqIDCounter();
+//				srp.setSRP_ID_number(sRP_ID_number_to_node);
 				piniToNode.setRsp(srp);
 				srp.setRFlag(pini.getRsp().isRFlag());
 
@@ -353,7 +352,7 @@ public class SingleDomainIniProcessorThread extends Thread {
 			PCEPIntiatedLSP inilsp = new PCEPIntiatedLSP();
 			ini.getPcepIntiatedLSPList().add(inilsp);
 			SRP srp = new SRP();
-			srp.setSRP_ID_number(ParentPCESession.getNewReqIDCounter());
+//	===			srp.setSRP_ID_number(ParentPCESession.getNewReqIDCounter());
 			inilsp.setRsp(srp);
 			srp.setRFlag(true);
 			LSP lsp = new LSP();
