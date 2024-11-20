@@ -78,7 +78,7 @@ public class PCEManagementSession extends Thread {
 	 * Logger
 	 */
 	private Logger log;
-	
+
 	private DomainPCEServer domainPCEServer;
 
 	/**
@@ -86,16 +86,13 @@ public class PCEManagementSession extends Thread {
 	 */
 	private PrintStream out;
 
-
-
 	public static ArrayList<DomainPCESession> oneSession = new ArrayList<DomainPCESession>();
 
 	public PCEManagementSession(Socket s, DomainPCEServer domainPCEServer) {
 		this.socket = s;
-		this.domainPCEServer=domainPCEServer;
-		log=LoggerFactory.getLogger("PCEServer");
+		this.domainPCEServer = domainPCEServer;
+		log = LoggerFactory.getLogger("PCEServer");
 	}
-
 
 	public void run() {
 		log.info("Starting Management session");
@@ -192,34 +189,34 @@ public class PCEManagementSession extends Thread {
 					update(command.substring(11));
 					out.print("\rUpdate sent");
 					out.print("\r\n");
-				}else if (command.startsWith("terminate lsp")) {
+				} else if (command.startsWith("terminate lsp")) {
 					this.terminate(command.substring(14));
 					out.print("\rTerminate sent");
 					out.print("\r\n");
-					
-				}else if (command.startsWith("initiate lsp")) {
+
+				} else if (command.startsWith("initiate lsp")) {
 					this.initiate(command.substring(13));
 					out.print("\rUpdate sent");
 					out.print("\r\n");
-				}
-				else if (command.equals("show parent pce") || command.equals("1")) {
+				} else if (command.equals("show parent pce") || command.equals("1")) {
 					// Enumeration<Inet4Address> pceIds= cprm.getDomainIdpceId().elements();
 					// Enumeration<Inet4Address> domains = cprm.getDomainIdpceId().keys();
 					// while (pceIds.hasMoreElements()){
 					// out.print("PCE Id: "+pceIds.nextElement()+ " Domain Id:
 					// "+domains.nextElement()+"\r\n");
 					// }
-				
+
 				} else if (command.equals("show topology") || command.equals("3")) {
 					// Print intradomain and interDomain links
 // ===					out.print(this.domainPCEServer.getTed().printTopology());
 
 				} else if (command.equals("queue size") || command.equals("4")) {
-					out.println("num pets " +  this.domainPCEServer.getPCCRequestDispatcher().queueSize());
+					out.println("num pets " + this.domainPCEServer.getPCCRequestDispatcher().queueSize());
 					out.println("num petsR " + this.domainPCEServer.getPCCRequestDispatcher().retryQueueSize());
 
 				} else if (command.equals("res size") || command.equals("5")) {
-					//out.println("num perm res " +this.domainPCEServer.get reservationManager.getReservationQueueSize());
+					// out.println("num perm res " +this.domainPCEServer.get
+					// reservationManager.getReservationQueueSize());
 
 				} else if (command.equals("show reachability") || command.equals("6")) {
 					// tedb.getDomainReachabilityIPv4Prefix();
@@ -227,7 +224,7 @@ public class PCEManagementSession extends Thread {
 
 				} else if (command.equals("show lsps") || command.equals("7")) {
 					out.println("Enjoy watching the LSPs the PCE has in his database");
-					out.println( this.domainPCEServer.getSingleDomainLSPDB().toString());
+					out.println(this.domainPCEServer.getSingleDomainLSPDB().toString());
 					/*
 					 * Hashtable<LSPKey, LSPTEInfo> LSPTEList =
 					 * ((SimpleLSP_DB)params.getLspDB()).getLSPTEList(); Enumeration<LSPKey> enumKey
@@ -366,14 +363,14 @@ public class PCEManagementSession extends Thread {
 					 * log.info(UtilsFunctions.exceptionToString(e));
 					 * log.error("Couldn't get I/O for connection to port" + 2222); }
 					 */
-					//FIXME
-					//oneSession.get(0).sendPCEPMessage(pceInit);
+					// FIXME
+					// oneSession.get(0).sendPCEPMessage(pceInit);
 
 				} else if (command.equals("send report")) {
 
 					log.info("Sending Repoooort");
-					//FIXME
-					//log.info("Sending to :" + oneSession.get(0).getSocket().getInetAddress());
+					// FIXME
+					// log.info("Sending to :" + oneSession.get(0).getSocket().getInetAddress());
 
 					PCEPReport rpt = new PCEPReport();
 					rpt.setStateReportList(new LinkedList<StateReport>());
@@ -386,24 +383,21 @@ public class PCEManagementSession extends Thread {
 					try {
 						rpt.encode();
 
-						//oneSession.get(0).sendPCEPMessage(rpt);
+						// oneSession.get(0).sendPCEPMessage(rpt);
 
 					} catch (PCEPProtocolViolationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				}
-				else if(command.startsWith("create candidatepath")) {
+				} else if (command.startsWith("create candidatepath")) {
 					this.createCandidatePath(command.substring(20));
 					out.print("\rCreating candidate Path");
 					out.print("\r\n");
-				}
-				else if(command.startsWith("delete candidatepath")) {
+				} else if (command.startsWith("delete candidatepath")) {
 					this.deleteCandidatePath(command.substring(20));
 					out.print("\rDeleting candidate Path");
 					out.print("\r\n");
-				}
-				else if(command.startsWith("initiatewp")) {
+				} else if (command.startsWith("initiatewp")) {
 					this.initiatewp(command.substring(10));
 					out.print("\rCreating working or protecting lsp");
 					out.print("\r\n");
@@ -568,74 +562,73 @@ public class PCEManagementSession extends Thread {
 			return;
 		}
 	}
-	
+
 	private void initiatewp(String inir) {
-		int offset=0;
-		
-		log.info("parsing "+inir);
-		StringTokenizer st = new StringTokenizer(inir," ");
-		
-		String name=st.nextToken();
-		offset+=name.length()+1;
+		int offset = 0;
+
+		log.info("parsing " + inir);
+		StringTokenizer st = new StringTokenizer(inir, " ");
+
+		String name = st.nextToken();
+		offset += name.length() + 1;
 
 		String exclude = st.nextToken();
-		offset +=exclude.length()+1;
-		
+		offset += exclude.length() + 1;
+
 		String id = st.nextToken();
-		offset += id.length()+1;
-		
-		String pcc= st.nextToken();
-		//Next 2 Items are the source and destination
-		Inet4Address ip_pcc=null;
+		offset += id.length() + 1;
+
+		String pcc = st.nextToken();
+		// Next 2 Items are the source and destination
+		Inet4Address ip_pcc = null;
 		try {
-			ip_pcc = (Inet4Address)Inet4Address.getByName(pcc);
+			ip_pcc = (Inet4Address) Inet4Address.getByName(pcc);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		offset+=pcc.length()+1;
-		//System.out.println("END POINTS NORMALES");
-		EndPointsIPv4 ep=new EndPointsIPv4();
-		String src_ip= st.nextToken();
-		
+		offset += pcc.length() + 1;
+		// System.out.println("END POINTS NORMALES");
+		EndPointsIPv4 ep = new EndPointsIPv4();
+		String src_ip = st.nextToken();
+
 		Inet4Address ipp;
 		try {
-			ipp = (Inet4Address)Inet4Address.getByName(src_ip);
-			((EndPointsIPv4) ep).setSourceIP(ipp);								
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		String dst_ip= st.nextToken();
-		//String src_ip= "1.1.1.1";
-		try {
-			ipp = (Inet4Address)Inet4Address.getByName(dst_ip);
-			((EndPointsIPv4) ep).setDestIP(ipp);								
+			ipp = (Inet4Address) Inet4Address.getByName(src_ip);
+			((EndPointsIPv4) ep).setSourceIP(ipp);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		offset+=src_ip.length()+1+dst_ip.length()+1;
-		log.info("parsing ero "+inir.substring(offset));
-		ExplicitRouteObject ero=StringToPCEP.stringToExplicitRouteObject(inir.substring(offset));
-		
+		String dst_ip = st.nextToken();
+		// String src_ip= "1.1.1.1";
+		try {
+			ipp = (Inet4Address) Inet4Address.getByName(dst_ip);
+			((EndPointsIPv4) ep).setDestIP(ipp);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		offset += src_ip.length() + 1 + dst_ip.length() + 1;
+		log.info("parsing ero " + inir.substring(offset));
+		ExplicitRouteObject ero = StringToPCEP.stringToExplicitRouteObject(inir.substring(offset));
+
 		int signalingType = 0;
-		if(ero.getEROSubobjectList().getFirst() instanceof SREROSubobject) {
-			//SR Up
+		if (ero.getEROSubobjectList().getFirst() instanceof SREROSubobject) {
+			// SR Up
 			signalingType = 1;
 		}
-		
-		this.domainPCEServer.getIniManager().initiateLSPWP(ep,ero,ip_pcc,signalingType,name,exclude,id);
-		
-	}
 
+		this.domainPCEServer.getIniManager().initiateLSPWP(ep, ero, ip_pcc, signalingType, name, exclude, id);
+
+	}
 
 	private void deleteCandidatePath(String substring) {
 		Inet4Address ip_pcc = null;
 		StringTokenizer st = new StringTokenizer(substring, " ");
-		
+
 		String pcc = st.nextToken();
 		log.info("PCC: " + pcc);
 
@@ -649,185 +642,175 @@ public class PCEManagementSession extends Thread {
 		String lspid = st.nextToken();
 		int lsp_id = Integer.parseInt(lspid);
 		log.info("PLSP-ID: " + lsp_id);
-		
-		this.domainPCEServer.getIniManager().deleteCandidatePath(ip_pcc,lsp_id);
-	}
 
+		this.domainPCEServer.getIniManager().deleteCandidatePath(ip_pcc, lsp_id);
+	}
 
 	private void createCandidatePath(String substring) {
 		Inet4Address ip_pcc = null;
 		Inet4Address ip_dest = null;
 		ExplicitRouteObject ero = null;
-		
-		int offset= 0;
-		log.info("parsing PCC "+substring.substring(offset));
+
+		int offset = 0;
+		log.info("parsing PCC " + substring.substring(offset));
 		StringTokenizer st = new StringTokenizer(substring, " ");
 		String pcc = st.nextToken();
-		
+
 		offset += pcc.getBytes().length;
-		
-		String policyName = null;	
+
+		String policyName = null;
 		String preference = null;
 		String candidatePathName = null;
-		
+
 		try {
 			ip_pcc = (Inet4Address) Inet4Address.getByName(pcc);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		log.info("parsing DEST "+substring.substring(offset));
+		log.info("parsing DEST " + substring.substring(offset));
 		String dest = st.nextToken();
 		log.warn("DESTINO: " + dest);
-		offset += dest.getBytes().length;	
+		offset += dest.getBytes().length;
 		try {
 			ip_dest = (Inet4Address) Inet4Address.getByName(dest);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		log.info("parsing COLOR "+substring.substring(offset));
+		log.info("parsing COLOR " + substring.substring(offset));
 		String color = st.nextToken();
-		log.warn("Color: " +color);
+		log.warn("Color: " + color);
 		offset += color.getBytes().length;
-			
+
 		int int_color = Integer.parseInt(color);
 
-		log.info("parsing LSPID "+substring.substring(offset));
+		log.info("parsing LSPID " + substring.substring(offset));
 		String lspid = st.nextToken();
-		log.warn("LSP ID: " +lspid);
+		log.warn("LSP ID: " + lspid);
 		offset += lspid.getBytes().length;
-		
-		
+
 		int lsp_id = Integer.parseInt(lspid);
-		
-		
+
 		// TLVs opcionales
-		/*while(st.hasMoreTokens()) {
-			String check = st.nextToken();	
-			offset += check.getBytes().length;
-			log.warn("CHECK: " + check);
-			
-			if (check == "-pn") {
-				policyName = st.nextToken();
-			} else if (check == "-cn") {
-				candidatePathName = st.nextToken();
-			} else if (check == "-p") {
-				preference = st.nextToken();
-			}	else {
-				log.warn("OFFSET: " + offset);
-				break;
-			}
-		}*/
+		/*
+		 * while(st.hasMoreTokens()) { String check = st.nextToken(); offset +=
+		 * check.getBytes().length; log.warn("CHECK: " + check);
+		 * 
+		 * if (check == "-pn") { policyName = st.nextToken(); } else if (check == "-cn")
+		 * { candidatePathName = st.nextToken(); } else if (check == "-p") { preference
+		 * = st.nextToken(); } else { log.warn("OFFSET: " + offset); break; } }
+		 */
 		policyName = "PCE-INIPOL-POLICYNAME-IGP" + lsp_id;
-		
+
 		preference = "100";
 
-		offset +=4;
-		log.info("parsing ero "+substring.substring(offset));
-		ero=StringToPCEP.stringToExplicitRouteObject(substring.substring(offset));
-		
+		offset += 4;
+		log.info("parsing ero " + substring.substring(offset));
+		ero = StringToPCEP.stringToExplicitRouteObject(substring.substring(offset));
+
 		int signalingType = 0;
-		if(ero.getEROSubobjectList().getFirst() instanceof SREROSubobject) {
-			//SR Up
+		if (ero.getEROSubobjectList().getFirst() instanceof SREROSubobject) {
+			// SR Up
 			signalingType = 1;
 		}
-		
+
 		this.domainPCEServer.getIniManager().createCandidatePath(ip_pcc, int_color, ip_dest, lsp_id, policyName,
-				candidatePathName, preference,ero);
-		
+				candidatePathName, preference, ero);
+
 	}
 
 	private void terminate(String lsp_number) {
 
-		log.info("parsing "+lsp_number);
-		
-		
-		StringTokenizer st = new StringTokenizer(lsp_number," ");
-		String pcc= st.nextToken();
-		//Next 2 Items are the source and destination
-		Inet4Address ip_pcc=null;
+		log.info("parsing " + lsp_number);
+
+		StringTokenizer st = new StringTokenizer(lsp_number, " ");
+		String pcc = st.nextToken();
+		// Next 2 Items are the source and destination
+		Inet4Address ip_pcc = null;
 		try {
-			ip_pcc = (Inet4Address)Inet4Address.getByName(pcc);
+			ip_pcc = (Inet4Address) Inet4Address.getByName(pcc);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		String number= st.nextToken();
+
+		String number = st.nextToken();
 		int int_lsp_number = Integer.parseInt(number);
 
-		this.domainPCEServer.getIniManager().terminateLSP(int_lsp_number,ip_pcc);
-		
-	}
-	
-	
-	private void initiate(String inir) {
-		int offset=0;
-		
-		log.info("parsing "+inir);
-		StringTokenizer st = new StringTokenizer(inir," ");
-		
-		String name=st.nextToken();
-		offset+=name.length()+1;
-		
+		this.domainPCEServer.getIniManager().terminateLSP(int_lsp_number, ip_pcc);
 
-		String exclude = st.nextToken();
-		offset +=exclude.length()+1;
-		
-		String pcc= st.nextToken();
-		//Next 2 Items are the source and destination
-		Inet4Address ip_pcc=null;
+	}
+
+	private void initiate(String inir) {
+		int offset = 0;
+
+		log.info("parsing " + inir);
+		StringTokenizer st = new StringTokenizer(inir, " ");
+
+		String name = st.nextToken();
+		log.info("name " + name);
+		offset += name.length() + 1;
+		log.info("offset " + offset);
+
+		log.info("st " + st);
+
+		String pcc = st.nextToken();
+		log.info("pcc " + pcc);
+
+		// Next 2 Items are the source and destination
+		Inet4Address ip_pcc = null;
 		try {
-			ip_pcc = (Inet4Address)Inet4Address.getByName(pcc);
+			ip_pcc = (Inet4Address) Inet4Address.getByName(pcc);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		offset+=pcc.length();
-		//System.out.println("END POINTS NORMALES");
-		EndPointsIPv4 ep=new EndPointsIPv4();
-		String src_ip= st.nextToken();
-		
+		offset += pcc.length();
+		// System.out.println("END POINTS NORMALES");
+		EndPointsIPv4 ep = new EndPointsIPv4();
+		String src_ip = st.nextToken();
+
 		Inet4Address ipp;
 		try {
-			ipp = (Inet4Address)Inet4Address.getByName(src_ip);
-			((EndPointsIPv4) ep).setSourceIP(ipp);								
+			ipp = (Inet4Address) Inet4Address.getByName(src_ip);
+			((EndPointsIPv4) ep).setSourceIP(ipp);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		String dst_ip= st.nextToken();
-		//String src_ip= "1.1.1.1";
+
+		String dst_ip = st.nextToken();
+		// String src_ip= "1.1.1.1";
 		try {
-			System.out.println(dst_ip);
-			ipp = (Inet4Address)Inet4Address.getByName(dst_ip);
-			((EndPointsIPv4) ep).setDestIP(ipp);								
+			ipp = (Inet4Address) Inet4Address.getByName(dst_ip);
+			((EndPointsIPv4) ep).setDestIP(ipp);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		/*String token2=st.nextToken();
-		
-		if(token2.startsWith("-m")) {
-			
-		}*/
-		
-		offset+=src_ip.length()+1+dst_ip.length()+1;
-		log.info("parsing ero "+inir.substring(offset));
-		ExplicitRouteObject ero=StringToPCEP.stringToExplicitRouteObject(inir.substring(offset));
-		
+
+		/*
+		 * String token2=st.nextToken();
+		 * 
+		 * if(token2.startsWith("-m")) {
+		 * 
+		 * }
+		 */
+
+		offset += src_ip.length() + 1 + dst_ip.length() + 1;
+		log.info("parsing ero " + inir.substring(offset));
+		ExplicitRouteObject ero = StringToPCEP.stringToExplicitRouteObject(inir.substring(offset));
+
 		int signalingType = 0;
-		if(ero.getEROSubobjectList().getFirst() instanceof SREROSubobject) {
-			//SR Up
+		if (ero.getEROSubobjectList().getFirst() instanceof SREROSubobject) {
+			// SR Up
 			signalingType = 1;
 		}
-		
-		this.domainPCEServer.getIniManager().initiateLSP(ep,ero,ip_pcc,signalingType,name,exclude);
+
+		this.domainPCEServer.getIniManager().initiateLSP(ep, ero, ip_pcc, signalingType, name);
 	}
-	
+
 	private void easySendUpdate(LSPTEInfo val, DomainPCESession dm) throws UnknownHostException {
 		PCEPUpdate update = new PCEPUpdate();
 		for (int i = 0; i < val.pcepReport.getStateReportList().size(); i++) {
@@ -919,36 +902,31 @@ public class PCEManagementSession extends Thread {
 			this.pcepReport = pcepReport;
 		}
 	}
-	
-	private void update(String update) throws UnknownHostException {
-		int offset=0;
-		StringTokenizer st = new StringTokenizer(update," ");
-		String id_lsp_s= st.nextToken();
-		offset+=id_lsp_s.length()+1;
-		int id_lsp=Integer.parseInt(id_lsp_s);
-		// oneSession.sendPCEPMessage(m_update);
-		
-		//DataOutputStream out= oneSession.get(0).getOut();
-		DataOutputStream out =null;
-		Set<Long> keys = this.domainPCEServer.getPcepSessionsInformation().sessionList.keySet();
-        for(Long key: keys){
-            System.out.println("Value of "+key+" is: "+ this.domainPCEServer.getPcepSessionsInformation().sessionList.get(key));
-            out=this.domainPCEServer.getPcepSessionsInformation().sessionList.get(key).getOut();
-        }
-		
-		if (st.hasMoreTokens()) {
-			ExplicitRouteObject ero=StringToPCEP.stringToExplicitRouteObject(update.substring(offset));
-			this.domainPCEServer.getPCCReportDispatcher().getDm().updateDelegatedPath(id_lsp,false, ero, out);
-		}else {
-			this.domainPCEServer.getPCCReportDispatcher().getDm().updateDelegatedPath(id_lsp,true, null, out);
-		}
-		
-		
-		
-	}
-	
-	
-	
 
+	private void update(String update) throws UnknownHostException {
+		int offset = 0;
+		StringTokenizer st = new StringTokenizer(update, " ");
+		String id_lsp_s = st.nextToken();
+		offset += id_lsp_s.length() + 1;
+		int id_lsp = Integer.parseInt(id_lsp_s);
+		// oneSession.sendPCEPMessage(m_update);
+
+		// DataOutputStream out= oneSession.get(0).getOut();
+		DataOutputStream out = null;
+		Set<Long> keys = this.domainPCEServer.getPcepSessionsInformation().sessionList.keySet();
+		for (Long key : keys) {
+			System.out.println("Value of " + key + " is: "
+					+ this.domainPCEServer.getPcepSessionsInformation().sessionList.get(key));
+			out = this.domainPCEServer.getPcepSessionsInformation().sessionList.get(key).getOut();
+		}
+
+		if (st.hasMoreTokens()) {
+			ExplicitRouteObject ero = StringToPCEP.stringToExplicitRouteObject(update.substring(offset));
+			this.domainPCEServer.getPCCReportDispatcher().getDm().updateDelegatedPath(id_lsp, false, ero, out);
+		} else {
+			this.domainPCEServer.getPCCReportDispatcher().getDm().updateDelegatedPath(id_lsp, true, null, out);
+		}
+
+	}
 
 }

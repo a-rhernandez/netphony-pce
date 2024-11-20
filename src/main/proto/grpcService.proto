@@ -1,0 +1,46 @@
+syntax = "proto3";	
+package src.main.proto;
+
+//el modulo python abre la comunicacion
+//el servidor java responde con un ACK (En caso de que se haya mandado un comando) o con la informacion de la LSPDB (En caso de peticion de LSPDB)
+
+// Command request from the client
+message commandRequest{
+	string command = 1;
+}
+
+// Response after a Command Request (If bad request show error log)
+message commandResponse{
+	bool success = 1;
+ 	string error_message = 2;
+}
+
+// LSP database request from the client
+message LSPdb_Request{
+}
+
+// Response containing LSP database information
+message LSPdb_Response{
+	string LSPdb_data = 2;
+}
+
+// Active PCEP sessions request from the client
+message Session_Request{
+}
+
+// Response containing LSP database information
+message Session_Response{
+	string Session_data = 2;
+}
+
+// Defining a Service, a Service can have multiple RPC operations
+service pceService {
+	// RPC method for command execution
+	rpc update(commandRequest) returns (commandResponse);
+	
+	// RPC method for retrieving LSP database
+	rpc getLSPdb(LSPdb_Request) returns (LSPdb_Response);
+	
+	// RPC method for retrieving LSP database
+	rpc getSessionsInfo(Session_Request) returns (Session_Response);
+}

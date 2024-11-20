@@ -1,5 +1,7 @@
 package es.tid.pce.server;
 
+import java.io.DataOutputStream;
+
 /** 
  * PCE Domain Server.
  * 
@@ -15,6 +17,9 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +32,27 @@ import org.slf4j.LoggerFactory;
 
 import es.tid.pce.computingEngine.ReportDispatcher;
 import es.tid.pce.computingEngine.RequestDispatcher;
+import es.tid.pce.pcep.objects.EndPointsIPv4;
+import es.tid.pce.pcep.objects.ExplicitRouteObject;
+import es.tid.pce.pcep.objects.subobjects.SREROSubobject;
 import es.tid.pce.pcepsession.PCEPSessionsInformation;
 
 import es.tid.pce.server.lspdb.ReportDB_Handler;
 import es.tid.pce.server.lspdb.SingleDomainLSPDB;
 import es.tid.pce.server.management.PCEManagementSever;
+import es.tid.pce.utils.StringToPCEP;
+import io.grpc.stub.StreamObserver;
 
+import src.main.proto.*;
+import src.main.proto.GrpcService.LSPdb_Request;
+import src.main.proto.GrpcService.LSPdb_Response;
+import src.main.proto.GrpcService.Session_Request;
+import src.main.proto.GrpcService.Session_Response;
+import src.main.proto.GrpcService.commandRequest;
+import src.main.proto.GrpcService.commandResponse;
+import src.main.proto.pceServiceGrpc.pceServiceImplBase;
 
-public class DomainPCEServer implements Runnable{
+public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 
 	/**
 	 * log: main logger for the PCE
@@ -83,6 +101,14 @@ public class DomainPCEServer implements Runnable{
 	IniPCCManager iniManager=null;
 	
 	ReportDispatcher PCCReportDispatcher = null;
+
+	private commandRequest request;
+	private commandRequest response;
+	private LSPdb_Request lsp_request;
+	private LSPdb_Response lsp_response;
+	private Session_Request session_request;
+	private Session_Response sessions_response;
+
 	
 	/**
 	 * First of all, it is needed to configure the PCE
@@ -141,6 +167,205 @@ public class DomainPCEServer implements Runnable{
 		log.info("Configuration file: " + configFile);
 		log.info("Inizializing Netphony Domain PCE Server!!");
 
+	}
+
+	@Override
+	public void update(commandRequest request, StreamObserver<commandResponse> responseObserver) {
+	    this.request = request;
+	    String command = request.getCommand();
+	    System.out.println("Comando recibido: " + command);
+
+	    commandResponse response;
+
+	    try {
+	        if (command.startsWith("update lsp")) {
+	            update_command(command.substring(11));
+	        } else if (command.startsWith("terminate lsp")) {
+	            terminate_command(command.substring(14));
+	        } else if (command.startsWith("initiate lsp")) {
+	            initiate_command(command.substring(13));
+	        } else {
+	            String errorMessage = "Invalid request: Unexistent method";
+	            System.out.println(errorMessage);
+	            throw new IllegalArgumentException(errorMessage);
+	        }
+
+	        // Build a success response
+	        response = buildSuccessResponse();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        // Build an error response with the exception message
+	        response = buildErrorResponse(e.getMessage());
+	    }
+
+	    // Use responseObserver to send a single response back
+	    responseObserver.onNext(response);
+
+	    // When you are done, you must call onCompleted.
+	    try {
+	        responseObserver.onCompleted();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	private commandResponse buildSuccessResponse() {
+	    return commandResponse.newBuilder()
+	            .setSuccess(true)
+	            .build();
+	}
+
+	private commandResponse buildErrorResponse(String errorMessage) {
+	    return commandResponse.newBuilder()
+	            .setSuccess(false)
+	            .setErrorMessage(errorMessage)
+	            .build();
+	}
+	
+	@Override
+	public void getLSPdb(LSPdb_Request lspreq , StreamObserver<LSPdb_Response>responseObserver) {
+		this.lsp_request = lspreq;
+
+		System.out.println("Comando GETLSPDB recibido: "+lspreq);
+		String lspdb_data = null;
+		
+		try {
+			lspdb_data = this.getSingleDomainLSPDB().toString();
+		}catch (Exception e) {
+			// Handle exceptions or errors and send an appropriate response
+            responseObserver.onError(e);
+		}
+			
+		LSPdb_Response lspres = LSPdb_Response.newBuilder()
+			      .setLSPdbData(lspdb_data)
+			      .build();
+		
+		// Use responseObserver to send a single response back
+	    responseObserver.onNext(lspres);
+	    
+		// When you are done, you must call onCompleted.
+	    try {
+	        responseObserver.onCompleted();
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    }
+	}
+	
+	@Override
+	public void getSessionsInfo(Session_Request sessreq , StreamObserver<Session_Response>responseObserver) {
+		this.session_request = sessreq;
+
+		System.out.println("Comando SessionRequest recibido: "+sessreq);
+		String session_data = null;
+		
+		try {
+			session_data = this.getPcepSessionsInformation().toString();
+		}catch (Exception e) {
+			// Handle exceptions or errors and send an appropriate response
+            responseObserver.onError(e);
+		}
+		
+		Session_Response sessresp = Session_Response.newBuilder()
+				.setSessionData(session_data)
+				.build();
+
+		// Use responseObserver to send a single response back	    
+	    responseObserver.onNext(sessresp);
+	    
+		// When you are done, you must call onCompleted.
+	    try {
+	        responseObserver.onCompleted();
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    }
+	}
+	
+	private void initiate_command(String command) {
+		int offset=0;
+		
+		StringTokenizer st = new StringTokenizer(command," ");
+		String name=st.nextToken();
+		offset+=name.length()+1;
+		String pcc= st.nextToken();
+
+		//Next 2 Items are the source and destination
+		Inet4Address ip_pcc=null;
+		try {
+			ip_pcc = (Inet4Address)Inet4Address.getByName(pcc);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		offset+=pcc.length();
+		EndPointsIPv4 ep=new EndPointsIPv4();
+		String src_ip= st.nextToken();
+		
+		Inet4Address ipp;
+		try {
+			ipp = (Inet4Address)Inet4Address.getByName(src_ip);
+			((EndPointsIPv4) ep).setSourceIP(ipp);								
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		String dst_ip= st.nextToken();
+		try {
+			ipp = (Inet4Address)Inet4Address.getByName(dst_ip);
+			((EndPointsIPv4) ep).setDestIP(ipp);								
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		offset+=src_ip.length()+1+dst_ip.length()+1;
+		ExplicitRouteObject ero=StringToPCEP.stringToExplicitRouteObject(command.substring(offset));
+		
+		int signalingType = 0;
+		if(ero.getEROSubobjectList().getFirst() instanceof SREROSubobject) {
+			//SR Up
+			signalingType = 1;
+		}
+		this.getIniManager().initiateLSP(ep,ero,ip_pcc,signalingType,name);
+	}
+
+	private void terminate_command(String command) {
+		StringTokenizer st = new StringTokenizer(command," ");
+		String pcc= st.nextToken();
+		
+		//Next 2 Items are the source and destination
+		Inet4Address ip_pcc=null;
+		try {
+			ip_pcc = (Inet4Address)Inet4Address.getByName(pcc);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		String number= st.nextToken();
+		int int_lsp_number = Integer.parseInt(number);
+		this.getIniManager().terminateLSP(int_lsp_number,ip_pcc);
+	}
+	
+	private void update_command(String command) throws UnknownHostException {
+		int offset=0;
+		StringTokenizer st = new StringTokenizer(command," ");
+		String id_lsp_s= st.nextToken();
+		offset+=id_lsp_s.length()+1;
+		int id_lsp=Integer.parseInt(id_lsp_s);
+		// oneSession.sendPCEPMessage(m_update);
+		
+		//DataOutputStream out= oneSession.get(0).getOut();
+		DataOutputStream out =null;
+		Set<Long> keys = this.getPcepSessionsInformation().sessionList.keySet();
+        for(Long key: keys){
+            System.out.println("Value of "+key+" is: "+ this.getPcepSessionsInformation().sessionList.get(key));
+            out=this.getPcepSessionsInformation().sessionList.get(key).getOut();
+        }
+		
+		if (st.hasMoreTokens()) {
+			ExplicitRouteObject ero=StringToPCEP.stringToExplicitRouteObject(command.substring(offset));
+			this.getPCCReportDispatcher().getDm().updateDelegatedPath(id_lsp,false, ero, out);
+		}else {
+			this.getPCCReportDispatcher().getDm().updateDelegatedPath(id_lsp,true, null, out);
+		}
 	}
 
 	public void run(){
