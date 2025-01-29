@@ -182,7 +182,7 @@ public class PCEManagementSession extends Thread {
 					}
 					return;
 				}
-				if (command.equals("show pcep sessions")) {
+				if (command.equals("show pcep sessions")|| command.equals("0")) {
 					out.print(this.domainPCEServer.getPcepSessionsInformation().toString());
 					out.print("\r\n");
 				} else if (command.startsWith("update lsp")) {
