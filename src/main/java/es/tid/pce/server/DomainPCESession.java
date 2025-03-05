@@ -172,7 +172,9 @@ public class DomainPCESession extends GenericPCEPSession{
 				if (this.msg != null) {//If null, it is not a valid PCEP message								
 					boolean pceMsg = true;//By now, we assume a valid PCEP message has arrived
 					//Depending on the type a different action is performed
+					log.warn("PCEP MESSAGE RECEIVED: "+PCEPMessage.getMessageType(this.msg));
 					switch(PCEPMessage.getMessageType(this.msg)) {
+											
 
 					case PCEPMessageTypes.MESSAGE_OPEN:
 						log.debug("OPEN message received");
@@ -247,7 +249,7 @@ public class DomainPCESession extends GenericPCEPSession{
 														ReportProcessTask rpt=new ReportProcessTask();
 														rpt.setOut(out);
 														rpt.setReportMessage(m_report);
-														
+																												
 														reportDispatcher.dispatchReport(rpt);
 														reportProcessed=true;
 													}
@@ -378,7 +380,7 @@ public class DomainPCESession extends GenericPCEPSession{
 	}
 
 	private void processOpen(OPEN open) {
-		params.getLspDB().proccessOpen(open, remotePCEId);
+		params.getLspDB().processOpen(open, remotePCEId);
 	}
 	
 	

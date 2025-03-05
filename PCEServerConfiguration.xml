@@ -52,7 +52,8 @@
 	<PCEPParserLogFile>PCEPParserServer.log</PCEPParserLogFile>
 	<OSPFParserLogFile>OSPFParser.log</OSPFParserLogFile>
 	<isStateful>true</isStateful>
-  <isActive>true</isActive>
+  	<isActive>true</isActive>
+  	<isSRCapable>true</isSRCapable>
 	<PCCRequestsProcessors>1</PCCRequestsProcessors>
 	<ParentPCERequestProcessors>1</ParentPCERequestProcessors>
 	<!--<networkDescriptionFile>networks\Network_8_nodes.xml</networkDescriptionFile>-->

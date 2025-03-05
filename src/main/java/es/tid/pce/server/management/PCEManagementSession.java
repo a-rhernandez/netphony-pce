@@ -186,7 +186,7 @@ public class PCEManagementSession extends Thread {
 					out.print(this.domainPCEServer.getPcepSessionsInformation().toString());
 					out.print("\r\n");
 				} else if (command.startsWith("update lsp")) {
-					update(command.substring(11));
+					this.update(command.substring(11));
 					out.print("\rUpdate sent");
 					out.print("\r\n");
 				} else if (command.startsWith("terminate lsp")) {
@@ -737,8 +737,10 @@ public class PCEManagementSession extends Thread {
 
 		String number = st.nextToken();
 		int int_lsp_number = Integer.parseInt(number);
-
-		this.domainPCEServer.getIniManager().terminateLSP(int_lsp_number, ip_pcc);
+		
+		String name = st.nextToken();
+		log.warn("lsp_number " + int_lsp_number+" name "+name+" pcc "+ip_pcc);
+		this.domainPCEServer.getIniManager().terminateLSP(int_lsp_number, ip_pcc, name);
 
 	}
 

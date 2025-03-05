@@ -16,7 +16,7 @@ public class PCEServer {
 		else
 			pceserver.configure(null);
 
-		Server server = ServerBuilder.forPort(9091).addService(pceserver).build();
+		Server server = ServerBuilder.forPort(10060).addService(pceserver).build();
 
 		// Start the server
 		server.start();

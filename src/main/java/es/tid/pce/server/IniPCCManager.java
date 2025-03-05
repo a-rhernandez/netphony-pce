@@ -77,27 +77,29 @@ public class IniPCCManager {
 	public StateReport newIni(PCEPInitiate pcini, Object node) {
 		Object object_lock = new Object();
 
-		long idSRP = pcini.getPcepIntiatedLSPList().get(0).getRsp().getSRP_ID_number();
-		// long idSRP= DelegationManager.getNextSRPID();
+		//long idSRP = pcini.getPcepIntiatedLSPList().get(0).getRsp().getSRP_ID_number();
+		long idSRP= DelegationManager.getNextSRPID();
 		log.warn("SRP ID: " + idSRP);
 		log.info("Sending PCEPInitiate to node " + node + "srp_id " + idSRP + " : " + pcini.toString());
-		inilocks.put(new Long(idSRP), object_lock);
+		inilocks.put(idSRP, object_lock);
+		log.debug("Added lock for SRP ID: " + idSRP);
 		try {
 			sendInitiate(pcini, node);
+			log.warn("PCEP Initiate message type: " + pcini.getMessageType());
 		} catch (IOException e1) {
 			log.warn("Problem with response from node " + node + " to initiate with srp_id " + idSRP);
-			inilocks.remove(object_lock);
+			inilocks.remove(idSRP);
 			return null;
 		}
 		synchronized (object_lock) {
 			try {
 				log.debug("Request sent, waiting for response");
-				object_lock.wait(30000);
+				object_lock.wait(20000);
 			} catch (InterruptedException e) {
 				// FIXME: Ver que hacer
 			}
 		}
-		StateReport resp = reports.get(new Long(idSRP));
+		StateReport resp = reports.get(idSRP);
 		if (resp == null) {
 			log.warn("No response from node " + node + " to initiate with srp_id " + idSRP);
 		} else {
@@ -131,13 +133,21 @@ public class IniPCCManager {
 
 	public void notifyReport(StateReport sr) {
 		long idRequest = sr.getSrp().getSRP_ID_number();
-		log.info("Entrando en Notify Report de id " + idRequest);
-		Object object_lock = inilocks.get(new Long(idRequest));
-		reports.put(new Long(idRequest), sr);
-		if (object_lock != null) {
-			object_lock.notifyAll();
+		log.warn("Entrando en Notify Report de id " + idRequest);
+		Object object_lock = inilocks.get(idRequest);
+		if (object_lock == null) {
+			log.warn("No lock found for id " + idRequest);
+		} else {
+			log.debug("Lock found for id " + idRequest);
 		}
-		inilocks.remove(object_lock);
+		reports.put(idRequest, sr);
+		if (object_lock != null) {
+			synchronized (object_lock) {
+				log.debug("Notifying all for id " + idRequest);
+				object_lock.notifyAll();
+			}
+		}
+		inilocks.remove(idRequest);
 	}
 
 	public Hashtable<Inet4Address, DataOutputStream> getPccOutputStream() {
@@ -271,7 +281,8 @@ public class IniPCCManager {
 		return nextId;
 	}
 
-	public void terminateLSP(int lsp_number, Object node) {
+	public void terminateLSP(int lsp_number, Object node, String name) {
+		log.warn("terminating LSP " + lsp_number + " on node " + node);
 		PCEPInitiate terminate = new PCEPInitiate();
 		PCEPIntiatedLSP inlsp = new PCEPIntiatedLSP();
 		SRP srp = new SRP();
@@ -285,6 +296,12 @@ public class IniPCCManager {
 		inlsp.setLsp(lsp);
 		inlsp.setSrp(srp);
 		terminate.getPcepIntiatedLSPList().add(inlsp);
+
+		// String name = ""+getNextId(); ESTE para terminate lsp "" 0
+
+		SymbolicPathNameTLV spn = new SymbolicPathNameTLV();
+		spn.setSymbolicPathNameID(name.getBytes());
+		lsp.setSymbolicPathNameTLV_tlv(spn);
 
 		this.newIni(terminate, node);
 
@@ -319,7 +336,7 @@ public class IniPCCManager {
 		inlsp.setLsp(lsp);
 		/** Endpoints **/
 		EndPointsIPv4 ep = new EndPointsIPv4();
-		String src_ip = "10.95.90.150";
+		String src_ip = "1.1.1.1";
 
 		Inet4Address ipp;
 		try {
@@ -343,7 +360,7 @@ public class IniPCCManager {
 		inlsp.setEndPoint(ep);
 		/** Association Object **/
 		AssociationIPv4 aso = new AssociationIPv4();
-		String string_ip_source = "10.95.47.193";
+		String string_ip_source = "10.95.228.179";
 		Inet4Address ip_source = null;
 
 		SRPolicyCandidatePathIdentifiersTLV policyIds = new SRPolicyCandidatePathIdentifiersTLV();

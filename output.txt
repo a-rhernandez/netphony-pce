@@ -1,0 +1,98 @@
+2025-02-20 09:54:53,597 main DEBUG Initializing configuration XmlConfiguration[location=/home/ubuntu/Netphony/netphony-pce/log4j2.xml]
+2025-02-20 09:54:53,605 main DEBUG Installed script engines
+2025-02-20 09:54:53,606 main DEBUG PluginManager 'Core' found 97 plugins
+2025-02-20 09:54:53,606 main DEBUG PluginManager 'Level' found 0 plugins
+2025-02-20 09:54:53,610 main DEBUG No scheduled items
+2025-02-20 09:54:53,611 main DEBUG PluginManager 'Lookup' found 13 plugins
+2025-02-20 09:54:53,613 main DEBUG Building Plugin[name=layout, class=org.apache.logging.log4j.core.layout.PatternLayout].
+2025-02-20 09:54:53,626 main DEBUG PluginManager 'TypeConverter' found 23 plugins
+2025-02-20 09:54:53,639 main DEBUG PatternLayout$Builder(pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %highlight{%msg%n}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=green, TRACE=green}", PatternSelector=null, Configuration(/home/ubuntu/Netphony/netphony-pce/log4j2.xml), Replace=null, charset="null", alwaysWriteExceptions="null", noConsoleNoAnsi="null", header="null", footer="null")
+2025-02-20 09:54:53,640 main DEBUG PluginManager 'Converter' found 38 plugins
+2025-02-20 09:54:53,645 main DEBUG Building Plugin[name=appender, class=org.apache.logging.log4j.core.appender.ConsoleAppender].
+2025-02-20 09:54:53,646 main DEBUG Not in a ServletContext environment, thus not loading WebLookup plugin.
+2025-02-20 09:54:53,647 main DEBUG PluginManager 'Converter' found 38 plugins
+2025-02-20 09:54:53,648 main DEBUG Starting OutputStreamManager SYSTEM_OUT.false-2
+2025-02-20 09:54:53,654 main DEBUG ConsoleAppender$Builder(PatternLayout(%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %highlight{%msg%n}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=green, TRACE=green}), Filter=null, target="SYSTEM_OUT", name="Console", follow="null", ignoreExceptions="null")
+2025-02-20 09:54:53,655 main DEBUG Starting OutputStreamManager SYSTEM_OUT.false
+2025-02-20 09:54:53,655 main DEBUG Building Plugin[name=appenders, class=org.apache.logging.log4j.core.config.AppendersPlugin].
+2025-02-20 09:54:53,657 main DEBUG createAppenders(={Console})
+2025-02-20 09:54:53,657 main DEBUG Building Plugin[name=AppenderRef, class=org.apache.logging.log4j.core.config.AppenderRef].
+2025-02-20 09:54:53,662 main DEBUG createAppenderRef(ref="Console", level="null", Filter=null)
+2025-02-20 09:54:53,662 main DEBUG Building Plugin[name=logger, class=org.apache.logging.log4j.core.config.LoggerConfig].
+2025-02-20 09:54:53,663 main DEBUG createLogger(additivity="false", level="TRACE", name="BGP4Peer", includeLocation="null", ={Console}, ={}, Configuration(/home/ubuntu/Netphony/netphony-pce/log4j2.xml), Filter=null)
+2025-02-20 09:54:53,666 main DEBUG Building Plugin[name=AppenderRef, class=org.apache.logging.log4j.core.config.AppenderRef].
+2025-02-20 09:54:53,666 main DEBUG createAppenderRef(ref="Console", level="null", Filter=null)
+2025-02-20 09:54:53,667 main DEBUG Building Plugin[name=root, class=org.apache.logging.log4j.core.config.LoggerConfig$RootLogger].
+2025-02-20 09:54:53,668 main DEBUG createLogger(additivity="null", level="DEBUG", includeLocation="null", ={Console}, ={}, Configuration(/home/ubuntu/Netphony/netphony-pce/log4j2.xml), Filter=null)
+2025-02-20 09:54:53,668 main DEBUG Building Plugin[name=loggers, class=org.apache.logging.log4j.core.config.LoggersPlugin].
+2025-02-20 09:54:53,669 main DEBUG createLoggers(={BGP4Peer, root})
+2025-02-20 09:54:53,669 main DEBUG Configuration XmlConfiguration[location=/home/ubuntu/Netphony/netphony-pce/log4j2.xml] initialized
+2025-02-20 09:54:53,670 main DEBUG Starting configuration XmlConfiguration[location=/home/ubuntu/Netphony/netphony-pce/log4j2.xml]
+2025-02-20 09:54:53,670 main DEBUG Started configuration XmlConfiguration[location=/home/ubuntu/Netphony/netphony-pce/log4j2.xml] OK.
+2025-02-20 09:54:53,670 main DEBUG Shutting down OutputStreamManager SYSTEM_OUT.false-1
+2025-02-20 09:54:53,671 main DEBUG Stopped org.apache.logging.log4j.core.config.DefaultConfiguration@379619aa OK
+2025-02-20 09:54:53,779 main DEBUG Registering MBean org.apache.logging.log4j2:type=30946e09
+2025-02-20 09:54:53,782 main DEBUG Registering MBean org.apache.logging.log4j2:type=30946e09,component=StatusLogger
+2025-02-20 09:54:53,784 main DEBUG Registering MBean org.apache.logging.log4j2:type=30946e09,component=ContextSelector
+2025-02-20 09:54:53,785 main DEBUG Registering MBean org.apache.logging.log4j2:type=30946e09,component=Loggers,name=
+2025-02-20 09:54:53,786 main DEBUG Registering MBean org.apache.logging.log4j2:type=30946e09,component=Loggers,name=BGP4Peer
+2025-02-20 09:54:53,787 main DEBUG Registering MBean org.apache.logging.log4j2:type=30946e09,component=Appenders,name=Console
+2025-02-20 09:54:53,790 main DEBUG Reconfiguration complete for context[name=30946e09] at URI /home/ubuntu/Netphony/netphony-pce/log4j2.xml (org.apache.logging.log4j.core.LoggerContext@50a638b5) with optional ClassLoader: null
+2025-02-20 09:54:53,790 main DEBUG Shutdown hook enabled. Registering a new one.
+2025-02-20 09:54:53,792 main DEBUG LoggerContext[name=30946e09, org.apache.logging.log4j.core.LoggerContext@50a638b5] started OK.
+09:54:53.812 [main] INFO  PCEServer - [32mConfiguration file: /home/ubuntu/Netphony/netphony-pce/PCEServerConfiguration.xml
+[m09:54:53.812 [main] INFO  PCEServer - [32mInizializing Netphony Domain PCE Server!!
+[m09:54:53.843 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.logging.InternalLoggerFactory - [32mUsing SLF4J as the default logging framework
+[m09:54:53.847 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32m-Dio.netty.noUnsafe: false
+[m09:54:53.847 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32mJava version: 17
+[m09:54:53.848 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32msun.misc.Unsafe.theUnsafe: available
+[m09:54:53.849 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32msun.misc.Unsafe.copyMemory: available
+[m09:54:53.850 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32msun.misc.Unsafe.storeFence: available
+[m09:54:53.850 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32mjava.nio.Buffer.address: available
+[m09:54:53.851 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32mdirect buffer constructor: unavailable: Reflective setAccessible(true) disabled
+[m09:54:53.851 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32mjava.nio.Bits.unaligned: available, true
+[m09:54:53.852 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32mjdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable: class io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0$7 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @4da69805
+[m09:54:53.854 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0 - [32mjava.nio.DirectByteBuffer.<init>(long, int): unavailable
+[m09:54:53.854 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32msun.misc.Unsafe: available
+[m09:54:53.855 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32mmaxDirectMemory: 4192206848 bytes (maybe)
+[m09:54:53.855 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32m-Dio.netty.tmpdir: /tmp (java.io.tmpdir)
+[m09:54:53.855 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32m-Dio.netty.bitMode: 64 (sun.arch.data.model)
+[m09:54:53.856 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32m-Dio.netty.maxDirectMemory: -1 bytes
+[m09:54:53.856 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32m-Dio.netty.uninitializedArrayAllocationThreshold: -1
+[m09:54:53.857 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.CleanerJava9 - [32mjava.nio.ByteBuffer.cleaner(): available
+[m09:54:53.857 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32m-Dio.netty.noPreferDirect: false
+[m09:54:53.895 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.NativeLibraryLoader - [32m-Dio.netty.native.workdir: /tmp (io.netty.tmpdir)
+[m09:54:53.895 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.NativeLibraryLoader - [32m-Dio.netty.native.deleteLibAfterLoading: true
+[m09:54:53.895 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.NativeLibraryLoader - [32m-Dio.netty.native.tryPatchShadedId: true
+[m09:54:53.895 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.NativeLibraryLoader - [32m-Dio.netty.native.detectNativeLibraryDuplicates: true
+[m09:54:53.922 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.NativeLibraryLoader - [32mSuccessfully loaded the library /tmp/libio_grpc_netty_shaded_netty_transport_native_epoll_x86_6414352006286238805283.so
+[m09:54:53.926 [main] DEBUG io.grpc.netty.shaded.io.netty.util.NetUtil - [32m-Djava.net.preferIPv4Stack: false
+[m09:54:53.926 [main] DEBUG io.grpc.netty.shaded.io.netty.util.NetUtil - [32m-Djava.net.preferIPv6Addresses: false
+[m09:54:53.928 [main] DEBUG io.grpc.netty.shaded.io.netty.util.NetUtilInitializations - [32mLoopback interface: lo (lo, 0:0:0:0:0:0:0:1%lo)
+[m09:54:53.929 [main] DEBUG io.grpc.netty.shaded.io.netty.util.NetUtil - [32m/proc/sys/net/core/somaxconn: 4096
+[m09:54:53.954 [main] DEBUG io.grpc.netty.shaded.io.netty.channel.MultithreadEventLoopGroup - [32m-Dio.netty.eventLoopThreads: 16
+[m09:54:54.006 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.InternalThreadLocalMap - [32m-Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+[m09:54:54.006 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.InternalThreadLocalMap - [32m-Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+[m09:54:54.032 [main] DEBUG io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent - [32morg.jctools-core.MpscChunkedArrayQueue: available
+[m09:54:54.058 [main] DEBUG io.grpc.netty.shaded.io.netty.util.ResourceLeakDetector - [32m-Dio.grpc.netty.shaded.io.netty.leakDetection.level: simple
+[m09:54:54.058 [main] DEBUG io.grpc.netty.shaded.io.netty.util.ResourceLeakDetector - [32m-Dio.grpc.netty.shaded.io.netty.leakDetection.targetRecords: 4
+[m09:54:54.060 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.numHeapArenas: 16
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.numDirectArenas: 16
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.pageSize: 8192
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.maxOrder: 9
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.chunkSize: 4194304
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.smallCacheSize: 256
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.normalCacheSize: 64
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.maxCachedBufferCapacity: 32768
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.cacheTrimInterval: 8192
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.cacheTrimIntervalMillis: 0
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.useCacheForAllThreads: false
+[m09:54:54.061 [main] DEBUG io.grpc.netty.shaded.io.netty.buffer.PooledByteBufAllocator - [32m-Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
+[m09:54:54.100 [grpc-default-boss-ELG-1-1] DEBUG io.grpc.netty.shaded.io.netty.channel.DefaultChannelId - [32m-Dio.netty.processId: 1002706 (auto-detected)
+[m09:54:54.105 [grpc-default-boss-ELG-1-1] DEBUG io.grpc.netty.shaded.io.netty.channel.DefaultChannelId - [32m-Dio.netty.machineId: 02:42:0e:ff:fe:f2:17:e2 (auto-detected)
+[m2025-02-20 09:54:54,104 pool-1-thread-1 DEBUG Stopping LoggerContext[name=30946e09, org.apache.logging.log4j.core.LoggerContext@50a638b5]
+2025-02-20 09:54:54,106 pool-1-thread-1 DEBUG Stopping LoggerContext[name=30946e09, org.apache.logging.log4j.core.LoggerContext@50a638b5]...
+2025-02-20 09:54:54,111 pool-1-thread-1 DEBUG Shutting down OutputStreamManager SYSTEM_OUT.false
+2025-02-20 09:54:54,112 pool-1-thread-1 DEBUG Stopped XmlConfiguration[location=/home/ubuntu/Netphony/netphony-pce/log4j2.xml] OK
+2025-02-20 09:54:54,112 pool-1-thread-1 DEBUG Stopped LoggerContext[name=30946e09, org.apache.logging.log4j.core.LoggerContext@50a638b5]...
+2025-02-20 09:54:54,113 grpc-default-boss-ELG-1-1 DEBUG Not in a ServletContext environment, thus not loading WebLookup plugin.

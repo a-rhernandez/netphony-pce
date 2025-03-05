@@ -8,14 +8,17 @@ package es.tid.pce.computingEngine;
  */
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.tid.pce.pcep.messages.PCEPReport;
-import es.tid.pce.server.PCEServerParameters;
 import es.tid.pce.server.delegation.DelegationManager;
 import es.tid.pce.server.lspdb.ReportDB_Handler;
+
 
 public class ReportProcessorThread extends Thread {
 	boolean running;
@@ -23,10 +26,14 @@ public class ReportProcessorThread extends Thread {
 	LinkedBlockingQueue<ReportProcessTask> reportMessageQueue;
 
 	ReportDB_Handler lspDB;
+	// ReportDB_Simple lspDB;
 
 	DelegationManager dm;
 
 	Logger log;
+	
+	List<PCEPReport> reportsWithZeroLspId = new ArrayList<>();  // Lista para almacenar los reportes con lspId == 0
+
 
 	public ReportProcessorThread(LinkedBlockingQueue<ReportProcessTask> reportMessageQueue, ReportDB_Handler lspDB,
 			DelegationManager dm) {
@@ -92,6 +99,17 @@ public class ReportProcessorThread extends Thread {
 				dm.processReport(pcepReport.getStateReportList().get(i), reportTask.getOut());
 			}
 
+		} 
+		else if (lspId == 0) {
+		// Si el lspId es 0, procesamos igualmente  el reporte
+		lspDB.processReport(pcepReport);
+		
+		
 		}
 	}
+	// Método para obtener los reportes almacenados con lspId == 0
+    public List<PCEPReport> getReportsWithZeroLspId() {
+        return reportsWithZeroLspId;
+    }
+	
 }

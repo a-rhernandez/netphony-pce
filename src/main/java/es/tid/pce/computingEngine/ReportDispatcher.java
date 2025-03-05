@@ -1,6 +1,9 @@
 package es.tid.pce.computingEngine;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +11,8 @@ import es.tid.pce.pcep.messages.PCEPReport;
 import es.tid.pce.server.PCEServerParameters;
 import es.tid.pce.server.delegation.DelegationManager;
 import es.tid.pce.server.lspdb.ReportDB_Handler;
+// import es.tid.pce.server.lspdb.ReportDB_Handler;
+import es.tid.pce.server.lspdb.ReportDB_Simple;
 import es.tid.pce.server.lspdb.SingleDomainLSPDB;
 
 /**
@@ -35,7 +40,10 @@ public class ReportDispatcher
 	  * Queue to add path computing requests.
 	  * This queue is read by the request processor threads. 
 	  */
-	 private LinkedBlockingQueue<ReportProcessTask> reportMessageQueue;
+	private LinkedBlockingQueue<ReportProcessTask> reportMessageQueue;
+
+	private List<PCEPReport> reportsWithZeroLspId;  // Lista para almacenar los reportes con lspId == 0
+	 
 
 	
 	/**
@@ -64,6 +72,13 @@ public class ReportDispatcher
 	public void dispatchReport(ReportProcessTask pcepReport)
 	{	    
 		reportMessageQueue.add(pcepReport);
+		// reportsWithZeroLspId = new ArrayList<>();
+		// reportsWithZeroLspId.add(pcepReport.getReportMessage());
+    }
+
+	// Método para obtener los reportes almacenados con lspId == 0
+    public List<PCEPReport> getReportsWithZeroLspId() {
+        return reportsWithZeroLspId;
     }
 
 	public DelegationManager getDm() {

@@ -1,32 +1,19 @@
 package es.tid.pce.server;
 
 import java.io.DataOutputStream;
-
-/** 
- * PCE Domain Server.
- * 
- * It is the main class of a PCE that is responsible of a domain.
- * 
- * By default listens on port 4189
- * 
- * @author Oscar, Eduardo
- */
-
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Timer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +23,11 @@ import es.tid.pce.pcep.objects.EndPointsIPv4;
 import es.tid.pce.pcep.objects.ExplicitRouteObject;
 import es.tid.pce.pcep.objects.subobjects.SREROSubobject;
 import es.tid.pce.pcepsession.PCEPSessionsInformation;
-
 import es.tid.pce.server.lspdb.ReportDB_Handler;
 import es.tid.pce.server.lspdb.SingleDomainLSPDB;
 import es.tid.pce.server.management.PCEManagementSever;
 import es.tid.pce.utils.StringToPCEP;
 import io.grpc.stub.StreamObserver;
-
-import src.main.proto.*;
 import src.main.proto.GrpcService.LSPdb_Request;
 import src.main.proto.GrpcService.LSPdb_Response;
 import src.main.proto.GrpcService.Session_Request;
@@ -68,7 +52,6 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 	
 
 	private static ReportDB_Handler rptdb;
-	
 	/**
 	 * True if the PCE is listening. False otherwise.
 	 */
@@ -108,6 +91,8 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 	private LSPdb_Response lsp_response;
 	private Session_Request session_request;
 	private Session_Response sessions_response;
+
+	private ReportDispatcher reportDispatcher;
 
 	
 	/**
@@ -187,7 +172,7 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 	        } else {
 	            String errorMessage = "Invalid request: Unexistent method";
 	            System.out.println(errorMessage);
-	            throw new IllegalArgumentException(errorMessage);
+	            // throw new IllegalArgumentException(errorMessage);
 	        }
 
 	        // Build a success response
@@ -221,70 +206,13 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 	            .setErrorMessage(errorMessage)
 	            .build();
 	}
-	
-	@Override
-	public void getLSPdb(LSPdb_Request lspreq , StreamObserver<LSPdb_Response>responseObserver) {
-		this.lsp_request = lspreq;
 
-		System.out.println("Comando GETLSPDB recibido: "+lspreq);
-		String lspdb_data = null;
-		
-		try {
-			lspdb_data = this.getSingleDomainLSPDB().toString();
-		}catch (Exception e) {
-			// Handle exceptions or errors and send an appropriate response
-            responseObserver.onError(e);
-		}
-			
-		LSPdb_Response lspres = LSPdb_Response.newBuilder()
-			      .setLSPdbData(lspdb_data)
-			      .build();
-		
-		// Use responseObserver to send a single response back
-	    responseObserver.onNext(lspres);
-	    
-		// When you are done, you must call onCompleted.
-	    try {
-	        responseObserver.onCompleted();
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }
-	}
-	
-	@Override
-	public void getSessionsInfo(Session_Request sessreq , StreamObserver<Session_Response>responseObserver) {
-		this.session_request = sessreq;
-
-		System.out.println("Comando SessionRequest recibido: "+sessreq);
-		String session_data = null;
-		
-		try {
-			session_data = this.getPcepSessionsInformation().toString();
-		}catch (Exception e) {
-			// Handle exceptions or errors and send an appropriate response
-            responseObserver.onError(e);
-		}
-		
-		Session_Response sessresp = Session_Response.newBuilder()
-				.setSessionData(session_data)
-				.build();
-
-		// Use responseObserver to send a single response back	    
-	    responseObserver.onNext(sessresp);
-	    
-		// When you are done, you must call onCompleted.
-	    try {
-	        responseObserver.onCompleted();
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }
-	}
-	
 	private void initiate_command(String command) {
 		int offset=0;
 		
 		StringTokenizer st = new StringTokenizer(command," ");
 		String name=st.nextToken();
+		log.debug(""+name);
 		offset+=name.length()+1;
 		String pcc= st.nextToken();
 
@@ -297,6 +225,7 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 		}
 		offset+=pcc.length();
 		EndPointsIPv4 ep=new EndPointsIPv4();
+		
 		String src_ip= st.nextToken();
 		
 		Inet4Address ipp;
@@ -327,10 +256,12 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 		this.getIniManager().initiateLSP(ep,ero,ip_pcc,signalingType,name);
 	}
 
+
+
 	private void terminate_command(String command) {
 		StringTokenizer st = new StringTokenizer(command," ");
 		String pcc= st.nextToken();
-		
+		log.warn("TERMINATE LSP GRPC");
 		//Next 2 Items are the source and destination
 		Inet4Address ip_pcc=null;
 		try {
@@ -339,12 +270,19 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 			e.printStackTrace();
 		}
 		
+
 		String number= st.nextToken();
 		int int_lsp_number = Integer.parseInt(number);
-		this.getIniManager().terminateLSP(int_lsp_number,ip_pcc);
+		
+		String name = st.nextToken();
+		
+		// log.info("GRPC: lsp_number " + int_lsp_number+" name "+name+" pcc "+ip_pcc);
+		this.getIniManager().terminateLSP(int_lsp_number,ip_pcc, name);
+
 	}
 	
 	private void update_command(String command) throws UnknownHostException {
+		log.warn("!UPDATE LSP GRPC!");
 		int offset=0;
 		StringTokenizer st = new StringTokenizer(command," ");
 		String id_lsp_s= st.nextToken();
@@ -356,7 +294,7 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 		DataOutputStream out =null;
 		Set<Long> keys = this.getPcepSessionsInformation().sessionList.keySet();
         for(Long key: keys){
-            System.out.println("Value of "+key+" is: "+ this.getPcepSessionsInformation().sessionList.get(key));
+            log.warn("Value of "+key+" is: "+ this.getPcepSessionsInformation().sessionList.get(key));
             out=this.getPcepSessionsInformation().sessionList.get(key).getOut();
         }
 		
@@ -368,6 +306,126 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 		}
 	}
 
+	
+	// YA NO LO USO; LLAMADA DESDE TFS A LA BBDD DIRECTAMENTE
+
+	@Override
+	public void getLSPdb(LSPdb_Request lspreq, StreamObserver<LSPdb_Response> responseObserver) {
+		System.out.println("Comando GETLSPDB recibido: " + lspreq);
+	
+		// Consulta SQL con ordenación por columnas
+		String query = "SELECT * FROM lsp ORDER BY lsp_uuid, srp, lsp"; // Ordenar por lsp_uuid, srp y lsp
+		StringBuilder resultado = new StringBuilder();
+	
+		// Encabezado de la tabla
+		resultado.append(String.format("%-40s %-10s %-20s %-30s %-20s%n",
+				"UUID", "SRP", "LSP", "Path", "Association"));
+		resultado.append("=".repeat(130)).append("\n"); // Línea separadora
+	
+		// Abre la conexión dentro del try-with-resources para asegurar que se maneje adecuadamente
+		try (Connection conn = rptdb.getConnection();  // La conexión se maneja automáticamente
+			 Statement stmt = conn.createStatement();    // Crea el Statement
+			 ResultSet rs = stmt.executeQuery(query)) {  // Ejecuta la consulta
+	
+			while (rs.next()) {
+				String lspUuid = rs.getString("lsp_uuid");
+				String srp = rs.getString("srp");
+				String lsp = rs.getString("lsp");
+				String path = rs.getString("path");
+				String associationList = rs.getString("associationlist");
+	
+				// Formatear cada fila con espacios alineados
+				resultado.append(String.format("%-40s %-10s %-20s %-30s %-20s%n",
+						lspUuid, srp, lsp, path, associationList));
+			}
+	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			responseObserver.onError(e);
+			return;
+		}
+	
+		// Crear la respuesta gRPC con los datos en formato tabla
+		LSPdb_Response lspres = LSPdb_Response.newBuilder()
+				.setLSPdbData(resultado.toString()) // Enviar datos como String con formato tabla
+				.build();
+	
+		// Enviar la respuesta al cliente gRPC
+		responseObserver.onNext(lspres);
+		responseObserver.onCompleted();
+	}
+	
+	
+	
+	// @Override
+	// public void getLSPdb(LSPdb_Request lspreq, StreamObserver<LSPdb_Response> responseObserver) {
+	// 	this.lsp_request = lspreq;
+	
+	// 	System.out.println("Comando GETLSPDB recibido: " + lspreq);
+		
+	
+	// 	// // List<PCEPReport> reportsWithZeroLspId = ReportDB_Handler.getStateReportDBList()
+	// 	// // log.debug(""+reportsWithZeroLspId);
+	// 	// // Convertir los datos a String o cualquier formato necesario
+	// 	// //String lspData = reportDB.toString(); // Asegúrate de implementar toString() en ReportDB
+	// 	// // String respuesta = reportsWithZeroLspId.toString();
+	// 	// String datos = ReportDB_Handler.toString();
+
+		
+		
+	// 	// // Crear la respuesta
+	// 	// LSPdb_Response lspres = LSPdb_Response.newBuilder()
+	// 	// 		.setLSPdbData(respuesta)
+	// 	// 		.build();
+
+	// 	// responseObserver.onNext(lspres);
+	// 	// responseObserver.onCompleted();
+	// 	// Conectamos a la base de datos
+
+	// 	List<PCEPReport> reportsList = this.getPCCReportDispatcher().getReportsWithZeroLspId();
+	// 	String lista = reportsList.toString();
+		
+	// 	// Crear la respuesta gRPC
+	// 	LSPdb_Response lspres = LSPdb_Response.newBuilder()
+	// 			.setLSPdbData(lista) // Usamos los módulos obtenidos de la base de datos
+	// 			.build();
+	
+	// 	// Enviar la respuesta al cliente gRPC
+	// 	responseObserver.onNext(lspres);
+	// 	responseObserver.onCompleted();
+
+	// }
+	
+
+	@Override
+	public void getSessionsInfo(Session_Request sessreq , StreamObserver<Session_Response>responseObserver) {
+		this.session_request = sessreq;
+
+		System.out.println("Comando SessionRequest recibido: "+sessreq);
+		String session_data = null;
+		
+		try {
+			session_data = this.getPcepSessionsInformation().toString();
+		}catch (Exception e) {
+			// Handle exceptions or errors and send an appropriate response
+            responseObserver.onError(e);
+		}
+		
+		Session_Response sessresp = Session_Response.newBuilder()
+				.setSessionData(session_data)
+				.build();
+
+		// Use responseObserver to send a single response back	    
+	    responseObserver.onNext(sessresp);
+	    
+		// When you are done, you must call onCompleted.
+	    try {
+	        responseObserver.onCompleted();
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    }
+	}
+	
 	public void run(){
 
 		//Create all the Elements of the PCE Server
@@ -473,16 +531,16 @@ public class DomainPCEServer extends pceServiceImplBase implements Runnable{
 			
 			if (pcepSessionsInformation.isStateful())
 			{
-				log.info("redis: "+params.getDbType() + " "+params.getDbName());
+				log.info("Cockroachdb: "+params.getDbType() + " "+params.getDbName());
 				if (params.getDbType().equals("redis") && params.getDbName().length() > 0)
 				{
 					log.info("redis: redis db with id: "+ params.getDbName());
 					rptdb = new ReportDB_Handler(params.getDbName(),"localhost");	
-					rptdb.fillFromDB();
+					// rptdb.fillFromDB();
 				}
 				else
 				{
-					rptdb = new ReportDB_Handler();
+					rptdb = new ReportDB_Handler(params.getDbName(),"localhost");
 				}
 				params.setLspDB(rptdb);	
 				log.info("Creando dispatchers para el LSP DB");

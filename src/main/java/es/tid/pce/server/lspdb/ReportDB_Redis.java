@@ -11,12 +11,11 @@ package es.tid.pce.server.lspdb;
 import java.util.Iterator;
 import java.util.List;
 
-import redis.clients.jedis.Jedis;
-
 import com.google.gson.Gson;
 
 import es.tid.pce.pcep.PCEPProtocolViolationException;
 import es.tid.pce.pcep.constructs.StateReport;
+import redis.clients.jedis.Jedis;
 
 public class ReportDB_Redis extends ReportDB_Simple
 {

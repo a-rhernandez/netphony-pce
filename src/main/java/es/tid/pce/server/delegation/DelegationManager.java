@@ -2,14 +2,8 @@ package es.tid.pce.server.delegation;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,20 +13,14 @@ import es.tid.pce.pcep.constructs.Path;
 import es.tid.pce.pcep.constructs.StateReport;
 import es.tid.pce.pcep.constructs.UpdateRequest;
 import es.tid.pce.pcep.messages.PCEPUpdate;
-import es.tid.pce.pcep.objects.Bandwidth;
 import es.tid.pce.pcep.objects.BandwidthExistingLSP;
-import es.tid.pce.pcep.objects.BandwidthUtilization;
 import es.tid.pce.pcep.objects.ExplicitRouteObject;
 import es.tid.pce.pcep.objects.LSP;
-import es.tid.pce.pcep.objects.LSPA;
-import es.tid.pce.pcep.objects.Metric;
 import es.tid.pce.pcep.objects.SRP;
 import es.tid.pce.pcep.objects.tlvs.PathSetupTLV;
-import es.tid.pce.pcep.objects.tlvs.SymbolicPathNameTLV;
 import es.tid.pce.server.SD_LSP;
 import es.tid.pce.server.lspdb.SingleDomainLSPDB;
 import es.tid.pce.utils.StringToPCEP;
-import es.tid.rsvp.objects.subobjects.IPv4prefixEROSubobject;
 
 public class DelegationManager {
 
@@ -97,6 +85,7 @@ public class DelegationManager {
 					lsp.setCreated(true);
 					lsp.setDelegated(true);
 					lsp_database.getSingleDomain_LSP_list().put(Integer.valueOf(lsp_id), lsp);
+					log.debug("LSPS"+lsp_database.toString());
 				} else {
 					log.debug("LSP not yet in database and it is not created by the PCE. Proceed to accept delegation and add to database");
 					lsp = new SD_LSP();
@@ -307,7 +296,7 @@ public class DelegationManager {
 		ur.setSrp(srp);
 		
 		if (sr!=null) {
-			log.info(sr.toString());
+			log.warn(sr.toString());
 			if (sr.getLsp().getLspIdentifiers_tlv() != null) {
 				ls.setLspIdentifiers_tlv(sr.getLsp().getLspIdentifiers_tlv());
 			}

@@ -27,38 +27,45 @@ public class ReportDB_Simple implements ReportDB
 		log = LoggerFactory.getLogger("Roadm");		
 	}
 	
+	@Override
 	public void add(StateReport rpt)
 	{
 		int key = getKey(rpt);
 		StateReportList.put(key, rpt);
 	};
 	
+	@Override
 	public StateReport remove(StateReport rpt) throws NullPointerException
 	{
 		int key = getKey(rpt);
 		return StateReportList.remove(key);
 	};
 	
-
+	@Override
 	public StateReport remove(int lspId) throws NullPointerException {
 		return StateReportList.remove(lspId);
 	};
 	
+	@Override
 	public void clearReports()
 	{
 		StateReportList = new Hashtable<Integer, StateReport>();
 	};
 	
+
+	@Override
 	public void update(StateReport rpt)
 	{
 		add(rpt);
 	};
 	
+	@Override
 	public StateReport get(int lspId)
 	{
 		return StateReportList.get(lspId);
 	}
 
+	
 	public String getModuleId() {
 		return moduleId;
 	}
@@ -72,11 +79,11 @@ public class ReportDB_Simple implements ReportDB
 		return StateReportList.size();
 	}
 	
+
+	@Override
 	public int getKey(StateReport rpt)
 	{
 		return rpt.getLsp().getLspId();
 	}
 	
-
-
 }
